@@ -6,6 +6,14 @@ consisting of two-player teams competing head-to-head).  The seeding "round" (mi
 actually a truncated round-robin tournament, with a predetermined number of rounds, in
 which players switch partners for every round, and the players are ranked by best overall
 individual performance.
+
+This module implements a brute force approach, wherein we specify constraints and/or
+thresholds for the number and type of interactions allowed between players across the
+rounds, and generate random picks for bye, team, and match that conform.  We then define
+evaluation functions that indicate the actual levels of repeated interactions and/or
+uniqueness of experience (e.g. in second-level interactions).  We can thus generate a
+number of conforming brackets and choose the one that demonstrates the best metrics
+(though it will almost certainly be suboptimal).
 """
 
 from enum import Enum
@@ -20,13 +28,14 @@ import sys
 
 NPLAYERS = 4
 
-Player  = int
-Byes    = set[Player]
-Team    = tuple[Player, Player]
-Matchup = tuple[Team, Team]
+# type aliases
+Player   = int
+Byes     = set[Player]
+Team     = tuple[Player, Player]
+Matchup  = tuple[Team, Team]
 
 class PlayerData(Enum):
-    """Statistics for evaluating brackets
+    """Statistics for evaluating brackets.
     """
     BYES         = "Byes"
     MATCHES      = "Matches"
@@ -39,8 +48,18 @@ class PlayerData(Enum):
     DIST_OPPS_2  = "Distinct 2nd-level Opponents"
     DIST_INTS_2  = "Distinct 2nd-level Interactions"
 
+FLOAT_PREC = 2
+
+def round_val(val: Number) -> Number:
+    """Provide the appropriate level of rounding for a stat value (does not change the
+    number type); passthrough for non-numeric types (e.g. bool or str).
+    """
+    if isinstance(val, float):
+        return round(val, FLOAT_PREC)
+    return val
+
 class Bracket:
-    """Represents a possible bracket
+    """Represents a possible bracket.
     """
     nplayers:  int
     nrounds:   int
@@ -63,30 +82,36 @@ class Bracket:
     opp_hist:  list[list[int]]    # indexed by player, opp; value is count
 
     # stats/evaluation stuff
-    stats: dict[PlayerData, list[Number]]  # per stat, list contains [min, max, mean, stdev]
+    stats:       dict[PlayerData, list[Number]]  # list contains [min, max, mean, stdev]
+    retry_team:  list[list[int]]  # indexed by round; value is list of team_idx
+    retry_match: list[list[int]]  # indexed by round; value is list of match_idx
 
     def __init__(self, nplayers: int, nrounds: int):
-        # this assumption is needed for logic in`pick_teams()`
+        # this assumption is needed for logic in `pick_teams()`
         assert nplayers > nrounds
         
-        self.nplayers  = nplayers
-        self.nrounds   = nrounds
-        self.nbyes     = self.nplayers % NPLAYERS
-        self.nseats    = self.nplayers - self.nbyes
-        self.nteams    = self.nseats // 2
-        self.nmatchups = self.nteams // 2
+        self.nplayers     = nplayers
+        self.nrounds      = nrounds
+        self.nbyes        = self.nplayers % NPLAYERS
+        self.nseats       = self.nplayers - self.nbyes
+        self.nteams       = self.nseats // 2
+        self.nmatchups    = self.nteams // 2
 
-        self.rnd_byes  = []
-        self.rnd_teams = []
+        self.rnd_byes     = []
+        self.rnd_teams    = []
         self.rnd_matchups = []
 
-        self.bye_hist  = set()
-        self.part_hist = [set() for _ in range(self.nplayers)]
-        self.opp_hist  = [[0] * self.nplayers for _ in range(self.nplayers)]
+        self.bye_hist     = set()
+        self.part_hist    = [set() for _ in range(self.nplayers)]
+        self.opp_hist     = [[0] * self.nplayers for _ in range(self.nplayers)]
+
+        self.stats        = {}
+        self.retry_team   = [list() for _ in range(self.nrounds)]
+        self.retry_match  = [list() for _ in range(self.nrounds)]
 
     def pick_byes(self, rnd: int) -> Byes:
         """Pick players that will get a bye this round; we just hardwire the selection to
-        be sequential across rounds, to assure evenness
+        be sequential across rounds, to assure evenness.
         """
         start = rnd * self.nbyes
         byes = {x % self.nplayers for x in range(start, start + self.nbyes)}
@@ -99,7 +124,7 @@ class Bracket:
 
     def pick_teams(self, rnd: int, byes: Byes) -> set[Team]:
         """Pick teams for the current round; we avoid picking previous partners, retrying
-        the selection process if no qualified candidates remain
+        the selection process if no qualifying candidates remain.
         """
         teams = set()
         all_players = range(self.nplayers)
@@ -115,7 +140,8 @@ class Bracket:
                 player = random.choice(list(available))
                 available.remove(player)
                 if available <= self.part_hist[player]:
-                    print(f"Retry picking teams (round {rnd}, team idx {len(teams)})")
+                    self.retry_team[rnd].append(len(teams))
+                    #print(f"Retry picking teams (round {rnd}, team idx {len(teams)})")
                     break
                 picklist = list(available - self.part_hist[player])
                 partner = random.choice(picklist)
@@ -126,7 +152,9 @@ class Bracket:
                 continue
             break
         if len(teams) < self.nteams:
-            raise RuntimeError(f"Unable to pick teams (round {rnd}, team idx {len(teams)})")
+            self.print_retries()
+            team_idx = self.retry_team[rnd][-1]
+            raise RuntimeError(f"Unable to pick teams (round {rnd}, team idx {team_idx})")
         assert len(teams) % 2 == 0
 
         for team in teams:
@@ -139,11 +167,11 @@ class Bracket:
     def pick_matchups(self, rnd: int, teams: set[Team]) -> set[Matchup]:
         """Pick matchups for the current round; we avoid picking opposing teams with
         previous partners for either player, and set a (currently suboptimal) threshold
-        for maximum times an opposing player is seen
+        for maximum times an opposing player is seen.
         """
         OPP_THRESH = 2
         matchups = set()
-        for _ in range(50):
+        for _ in range(100):
             available = teams.copy()
             while available:
                 team = random.choice(list(available))
@@ -158,7 +186,8 @@ class Bracket:
                             self.opp_hist[player][opp[1]] >= OPP_THRESH):
                             disqual_opp.add(opp)
                 if available <= disqual_part | disqual_opp:
-                    print(f"Retry picking matchup (round {rnd}, match idx {len(matchups)})")
+                    self.retry_match[rnd].append(len(matchups))
+                    #print(f"Retry picking matchup (round {rnd}, match idx {len(matchups)})")
                     break
                 picklist = list(available - disqual_part - disqual_opp)
                 opp = random.choice(picklist)
@@ -169,7 +198,9 @@ class Bracket:
                 continue
             break
         if len(matchups) < self.nmatchups:
-            raise RuntimeError(f"Unable to pick matchups (round {rnd}, match idx {len(matchups)})")
+            self.print_retries()
+            match_idx = self.retry_match[rnd][-1]
+            raise RuntimeError(f"Unable to pick matchups (round {rnd}, match idx {match_idx})")
         assert len(teams) % 2 == 0
             
         for matchup in matchups:
@@ -187,7 +218,7 @@ class Bracket:
 
     def build(self) -> None:
         """Go through the processing of bulding the bracket (i.e. picking all of the
-        matchups across rounds)
+        matchups across rounds).
         """
         for rnd in range(self.nrounds):
             byes     = self.pick_byes(rnd)
@@ -195,48 +226,17 @@ class Bracket:
             matchups = self.pick_matchups(rnd, teams)
 
     def evaluate(self) -> None:
-        """Evaluate the bracket in terms of ``BracketStat`` values
-
-        Stats for each player:
-        - Byes
-        - Matches
-        - Partners
-        - Opponents
-        - Distinct opponents
-        - Interactions
-        - Distinct interactions
-        - Distinct 2nd-level partners
-        - Distinct 2nd-level opponents
-        - Distinct 2nd-level interactions
-
-        Summary report: min, max, mean, stdev for stats
+        """Evaluate the bracket in terms of aggregations on the ``PlayerData`` values.
+        The resulting analysis is stored in ``self.stats``.
         """
-        all_stats = {
-            PlayerData.BYES:         [],
-            PlayerData.MATCHES:      [],
-            PlayerData.PARTS:        [],
-            PlayerData.OPPS:         [],
-            PlayerData.DIST_OPPS:    [],
-            PlayerData.INTS:         [],
-            PlayerData.DIST_INTS:    [],
-            PlayerData.DIST_PARTS_2: [],
-            PlayerData.DIST_OPPS_2:  [],
-            PlayerData.DIST_INTS_2:  []
-        }
+        all_stats = {}
+        for datum in PlayerData:
+            all_stats[datum] = []
 
         for player in range(self.nplayers):
-            pl_stats = {
-                PlayerData.BYES:         0,
-                PlayerData.MATCHES:      0,
-                PlayerData.PARTS:        0,
-                PlayerData.OPPS:         0,
-                PlayerData.DIST_OPPS:    0,
-                PlayerData.INTS:         0,
-                PlayerData.DIST_INTS:    0,
-                PlayerData.DIST_PARTS_2: 0,
-                PlayerData.DIST_OPPS_2:  0,
-                PlayerData.DIST_INTS_2:  0
-            }
+            pl_stats = {}
+            for datum in PlayerData:
+                pl_stats[datum] = 0
             
             if player in self.bye_hist:
                 pl_stats[PlayerData.BYES] += 1
@@ -257,20 +257,18 @@ class Bracket:
             for datum in PlayerData:
                 all_stats[datum].append(pl_stats[datum])
 
-        stats = []
-        print(f"{'Stat':32}\tMin\tMax\tMean\tStddev")
+        assert len(self.stats) == 0
         for datum in PlayerData:
             stats_agg = []
             for func in min, max, mean, stdev:
                 stats_agg.append(func(all_stats[datum]))
-            print(f"{datum.value:32}\t{stats_agg[0]}\t{stats_agg[1]}\t{stats_agg[2]:.2f}\t" +
-                  f"{stats_agg[3]:.2f}")
+            self.stats[datum] = stats_agg
 
     def print(self) -> None:
-        """Print bye, team, and matchup information by round
+        """Print bye, team, and matchup information by round.
         """
         for rnd in range(self.nrounds):
-            print(f"Round {rnd}:")
+            print(f"\nRound {rnd}:")
             for byes in self.rnd_byes[rnd]:
                 print(f"  Byes: {byes}")
             print("  Teams:")
@@ -280,22 +278,55 @@ class Bracket:
             for idx, matchup in enumerate(self.rnd_matchups[rnd]):
                 print(f"    {idx:2d}: {matchup[0]} vs. {matchup[1]}")
 
-#####################
-# command line tool #
-#####################
+        print(f"\n{'Stat':32}\tMin\tMax\tMean\tStddev")
+        print(f"{'----':32}\t---\t---\t----\t------")
+        for datum in PlayerData:
+            stats_agg = self.stats[datum]
+            print(f"{datum.value:32}\t{stats_agg[0]}\t{stats_agg[1]}\t{stats_agg[2]:.2f}\t" +
+                  f"{stats_agg[3]:.2f}")
+
+        self.print_retries()
+
+    def print_retries(self) -> None:
+        """Print some statistical information about retries when picking teams and
+        matchups.  Higher numbers of retries are indicators of lower headroom in working
+        within specified thresholds for repeated interactions, especially when the round
+        number and/or team/match index is just below the maximum value.
+        """
+        print("\nTeam Retries:")
+        for rnd, retries in enumerate(self.retry_team):
+            if len(retries) == 0:
+                continue
+            print(f"Round {rnd}: {len(retries)} retries (mean idx {round_val(mean(retries))})")
+
+        print("\nMatch Retries:")
+        for rnd, retries in enumerate(self.retry_match):
+            if len(retries) == 0:
+                continue
+            print(f"Round {rnd}: {len(retries)} retries (mean idx {round_val(mean(retries))})")
+
+################
+# command line #
+################
 
 def main() -> int:
     """Usage::
 
       $ python seed_round <nplayers>  <nrounds>
+
+    To do:
+
+    - Build multiple brackets and choose the one with the highest evaluation
+    - Print a prettier/more structured version of the bracket
+    - Develop a closed-form solution for optimality
     """
     nplayers = int(sys.argv[1])
     nrounds = int(sys.argv[2])
 
     bracket = Bracket(nplayers, nrounds)
     bracket.build()
-    bracket.print()
     bracket.evaluate()
+    bracket.print()
 
     return 0
 
