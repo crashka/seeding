@@ -37,25 +37,29 @@ Matchup  = tuple[Team, Team]
 class PlayerData(Enum):
     """Statistics for evaluating brackets.
     """
-    BYES         = "Byes"
-    MATCHES      = "Matches"
-    PARTS        = "Partners"
-    OPPS         = "Opponents"
     DIST_OPPS    = "Distinct Opponents"
-    INTS         = "Interactions"
     DIST_INTS    = "Distinct Interactions"
     DIST_PARTS_2 = "Distinct 2nd-level Partners"
     DIST_OPPS_2  = "Distinct 2nd-level Opponents"
     DIST_INTS_2  = "Distinct 2nd-level Interactions"
+    MEAN_PARTS_2 = "Mean 2nd-level Partners"
+    MEAN_OPPS_2  = "Mean 2nd-level Opponents"
+    MEAN_INTS_2  = "Mean 2nd-level Interactions"
+    MIN_PARTS_2  = "Minimum 2nd-level Partners"
+    MIN_OPPS_2   = "Minimum 2nd-level Opponents"
+    MIN_INTS_2   = "Minimum 2nd-level Interactions"
+    MAX_PARTS_2  = "Maximum 2nd-level Partners"
+    MAX_OPPS_2   = "Maximum 2nd-level Opponents"
+    MAX_INTS_2   = "Maximum 2nd-level Interactions"
 
 FLOAT_PREC = 2
 
-def round_val(val: Number) -> Number:
+def round_val(val: Number, prec: int = FLOAT_PREC) -> Number:
     """Provide the appropriate level of rounding for a stat value (does not change the
     number type); passthrough for non-numeric types (e.g. bool or str).
     """
     if isinstance(val, float):
-        return round(val, FLOAT_PREC)
+        return round(val, prec)
     return val
 
 class Bracket:
@@ -63,7 +67,7 @@ class Bracket:
     """
     nplayers:  int
     nrounds:   int
-    
+
     # numbers for each round
     nbyes:     int
     nseats:    int
@@ -89,7 +93,7 @@ class Bracket:
     def __init__(self, nplayers: int, nrounds: int):
         # this assumption is needed for logic in `pick_teams()`
         assert nplayers > nrounds
-        
+
         self.nplayers     = nplayers
         self.nrounds      = nrounds
         self.nbyes        = self.nplayers % NPLAYERS
@@ -202,7 +206,7 @@ class Bracket:
             match_idx = self.retry_match[rnd][-1]
             raise RuntimeError(f"Unable to pick matchups (round {rnd}, match idx {match_idx})")
         assert len(teams) % 2 == 0
-            
+
         for matchup in matchups:
             (p1, p2), (p3, p4) = matchup
             self.opp_hist[p1][p3] += 1
@@ -237,22 +241,60 @@ class Bracket:
             pl_stats = {}
             for datum in PlayerData:
                 pl_stats[datum] = 0
-            
-            if player in self.bye_hist:
-                pl_stats[PlayerData.BYES] += 1
-            # we can do this, since we guarantee no repeated partners
-            pl_stats[PlayerData.MATCHES] += len(self.part_hist[player])
-            pl_stats[PlayerData.PARTS] += len(self.part_hist[player])
 
-            opp_list = self.opp_hist[player]
-            pl_stats[PlayerData.OPPS] += sum(opp_list)
+            opp_list = self.opp_hist[player].copy()
             pl_stats[PlayerData.DIST_OPPS] = len(opp_list) - opp_list.count(0)
 
             int_list = opp_list.copy()
             for part in self.part_hist[player]:
                 int_list[part] += 1
-            pl_stats[PlayerData.INTS] += sum(int_list)
             pl_stats[PlayerData.DIST_INTS] = len(int_list) - int_list.count(0)
+
+            # tabulate second level interactions
+            l2_part = [0] * self.nplayers
+            l2_opp  = [0] * self.nplayers
+            l2_int  = [0] * self.nplayers
+            for other in range(self.nplayers):
+                if other == player:
+                    continue
+                # OPEN ISSUE: should we include L1 interactions in L2 tabulation???
+                # tabulate partner path (doesn't touch l2_opp)
+                if other in self.part_hist[player]:
+                    for l2_other in range(self.nplayers):
+                        if l2_other == player or l2_other == other:
+                            continue
+                        if l2_other in self.part_hist[other]:
+                            l2_part[l2_other] += 1
+                            l2_int[l2_other] += 1
+                        l2_int[l2_other] += self.opp_hist[other][l2_other]
+                # tabulate opponent path (doesn't touch l2_part)
+                if self.opp_hist[player][other] > 0:
+                    for l2_other in range(self.nplayers):
+                        if l2_other == player or l2_other == other:
+                            continue
+                        if l2_other in self.part_hist[other]:
+                            l2_int[l2_other] += 1
+                        l2_opp[l2_other] += self.opp_hist[other][l2_other]
+                        l2_int[l2_other] += self.opp_hist[other][l2_other]
+
+            del l2_part[player]
+            del l2_opp[player]
+            del l2_int[player]
+
+            pl_stats[PlayerData.DIST_PARTS_2] = len(l2_part) - l2_part.count(0)
+            pl_stats[PlayerData.MEAN_PARTS_2] = round_val(mean(l2_part), 1)
+            pl_stats[PlayerData.MIN_PARTS_2]  = min(l2_part)
+            pl_stats[PlayerData.MAX_PARTS_2]  = max(l2_part)
+
+            pl_stats[PlayerData.DIST_OPPS_2]  = len(l2_opp) - l2_opp.count(0)
+            pl_stats[PlayerData.MEAN_OPPS_2]  = round_val(mean(l2_opp), 1)
+            pl_stats[PlayerData.MIN_OPPS_2]   = min(l2_opp)
+            pl_stats[PlayerData.MAX_OPPS_2]   = max(l2_opp)
+
+            pl_stats[PlayerData.DIST_INTS_2]  = len(l2_int) - l2_int.count(0)
+            pl_stats[PlayerData.MEAN_INTS_2]  = round_val(mean(l2_int), 1)
+            pl_stats[PlayerData.MIN_INTS_2]   = min(l2_int)
+            pl_stats[PlayerData.MAX_INTS_2]   = max(l2_int)
 
             for datum in PlayerData:
                 all_stats[datum].append(pl_stats[datum])
