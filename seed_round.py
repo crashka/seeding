@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Generate the matchups for the "seeding round" of a card-playing tournament (or any game
-consisting of two-player teams competing head-to-head).  The seeding "round" (misnomer) is
-actually a truncated round-robin tournament, with a predetermined number of rounds, in
-which players switch partners for every round, and the players are ranked by best overall
-individual performance.
+"""The objective here is to generate matchups for the "seeding round" of a card-playing
+tournament (or any game consisting of two-player teams competing head-to-head).  The
+seeding "round" (misnomer) is actually a truncated round-robin tournament in itself, with
+a predetermined number of inner-rounds, in which players change partners for each round.
+The players are then ranked by best overall individual performance.
 
-This module implements a brute force approach, wherein we specify constraints and/or
+This script implements a brute force approach, wherein we specify constraints and/or
 thresholds for the number and type of interactions allowed between players across the
-rounds, and generate random picks for bye, team, and match that conform.  We then define
-evaluation functions that indicate the actual levels of repeated interactions and/or
-uniqueness of experience (e.g. in second-level interactions).  We can thus generate a
-number of conforming brackets and choose the one that demonstrates the best metrics
-(though it will almost certainly be suboptimal).
+rounds, and generate random picks for byes, teams, and matchups for each round that
+conform to the rules.  We then define evaluation functions that indicate the actual levels
+of repeated interactions and/or diversity of experience (e.g. uniqueness in second-level
+interactions).  We can thus generate a number of conforming brackets and choose the one
+that demonstrates the best metrics (though it will almost certainly be suboptimal).
 """
 
 from enum import Enum
@@ -52,6 +52,8 @@ class PlayerData(Enum):
     MAX_PARTS_2  = "Maximum 2nd-level Partnerships"
     MAX_OPPS_2   = "Maximum 2nd-level Oppositions"
     MAX_INTS_2   = "Maximum 2nd-level Interactions (any)"
+
+EvalStats = dict[PlayerData, list[Number]]  # list contains [min, max, mean, stdev]
 
 FLOAT_PREC = 2
 
@@ -99,7 +101,7 @@ class Bracket:
     opp_hist:  list[list[int]]    # indexed by player, opp; value is count
 
     # stats/evaluation stuff
-    stats:       dict[PlayerData, list[Number]]  # list contains [min, max, mean, stdev]
+    stats:       EvalStats        # PlayerData aggregations (see type definition)
     retry_team:  list[list[int]]  # indexed by round; value is list of team_idx
     retry_match: list[list[int]]  # indexed by round; value is list of match_idx
 
@@ -258,7 +260,7 @@ class Bracket:
             teams    = self.pick_teams(rnd, byes)
             matchups = self.pick_matchups(rnd, teams)
 
-    def evaluate(self) -> None:
+    def evaluate(self) -> EvalStats:
         """Evaluate the bracket in terms of aggregations on the ``PlayerData`` values.
         The resulting analysis is stored in ``self.stats``.
         """
@@ -336,6 +338,7 @@ class Bracket:
             for func in min, max, mean, stdev:
                 stats_agg.append(func(all_stats[datum]))
             self.stats[datum] = stats_agg
+        return self.stats
 
     def print(self) -> None:
         """Print bye, team, and matchup information by round.
@@ -356,7 +359,6 @@ class Bracket:
             stats_agg = self.stats[datum]
             print(f"{datum.value:32}\t{stats_agg[0]}\t{stats_agg[1]}\t{stats_agg[2]:.2f}\t" +
                   f"{stats_agg[3]:.2f}")
-
         self.print_retries()
 
     def print_retries(self) -> None:
@@ -381,6 +383,8 @@ class Bracket:
 # command line #
 ################
 
+NTRIES = 10
+
 def main() -> int:
     """Usage::
 
@@ -390,16 +394,27 @@ def main() -> int:
 
     - Compute optimal stat values as reference/benchmark for evaluations
     - Build multiple brackets and choose the one with the highest evaluation
-    - Print a prettier/more structured version of the bracket
+    - Print a prettier/more structured version of the final bracket
     - Develop a closed-form solution for optimality
     """
     nplayers = int(sys.argv[1])
     nrounds = int(sys.argv[2])
+    stats = None
 
-    bracket = Bracket(nplayers, nrounds)
-    bracket.build()
-    bracket.evaluate()
-    bracket.print()
+    for _ in range(NTRIES):
+        bracket = Bracket(nplayers, nrounds)
+        try:
+            bracket.build()
+        except RuntimeError as e:
+            print(e)
+            print("Rebuilding bracket...")
+            continue
+        stats = bracket.evaluate()
+        bracket.print()
+        break
+
+    if not stats:
+        print(f"Unable to build bracket after {NTRIES} attempts")
 
     return 0
 

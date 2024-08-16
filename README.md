@@ -24,6 +24,7 @@ $ python seed_round.py <nplayers>  <nrounds>
 
 ## To Do
 
+- Compute optimal stat values as reference/benchmark for evaluations
 - Build multiple brackets and choose the one with the highest evaluation
 - Print a prettier/more structured version of the final bracket
 - Develop a closed-form solution for optimality
