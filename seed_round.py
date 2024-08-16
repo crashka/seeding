@@ -257,7 +257,7 @@ class Bracket:
             teams    = self.pick_teams(rnd, byes)
             matchups = self.pick_matchups(rnd, teams)
 
-    def evaluate(self) -> EvalStats:
+    def evaluate(self) -> None:
         """Evaluate the bracket in terms of aggregations on the ``PlayerData`` values.
         The resulting analysis is stored in ``self.stats``.
         """
@@ -357,7 +357,6 @@ class Bracket:
                 stats_agg.append(func(all_stats[datum]))
             stats_agg.append(opt.get(datum))
             self.stats[datum] = stats_agg
-        return self.stats
 
     def print(self) -> None:
         """Print bye, team, and matchup information by round.
@@ -421,24 +420,53 @@ class Bracket:
 # command line #
 ################
 
-NTRIES = 10
+NTRIES = 20
 
-def main() -> int:
-    """Usage::
+def best_bracket(nplayers: int, nrounds: int, iters: int) -> Bracket:
+    """Find the bracket with the best performing evaluation metrics.
 
-      $ python seed_round <nplayers>  <nrounds>
-
-    To do:
-
-    - Compute overall evaluation metrics based on divergence from optimial
-    - Build multiple brackets and choose the one with the highest evaluation
-    - Print a prettier/more structured version of the final bracket
-    - Develop a closed-form solution for optimality
+    For now, the encoding of the selection criteria is hardwired, but later we can pass in
+    options for it from the command line.
     """
-    nplayers = int(sys.argv[1])
-    nrounds = int(sys.argv[2])
-    stats = None
+    def cmp(b1: Bracket, b2: Bracket) -> int:
+        """Return `True` if `b1` scores higher than `b2`, `False` if `b1` scores lower
+        than `b2`.
+        """
+        if not b2:
+            return True
+        dist_int1 = b1.stats[PlayerData.DIST_INTS]
+        dist_int2 = b2.stats[PlayerData.DIST_INTS]
+        sprd_int1 = b1.stats[PlayerData.SPRD_INTS_2]
+        sprd_int2 = b2.stats[PlayerData.SPRD_INTS_2]
+        # criterion 1: highest minimum distinct interactions (direct)
+        # criterion 2: highest mean distinct interactions (direct)
+        # criterion 3: lowest mean level 2 interaction spread
+        if dist_int1[0] != dist_int2[0]:
+            return dist_int1[0] > dist_int2[0]
+        else:
+            if dist_int1[2] != dist_int2[2]:
+                return dist_int1[2] > dist_int2[2]
+            else:
+                return sprd_int1[2] < sprd_int2[2]
 
+    best = None
+    failures = 0
+    for _ in range(iters):
+        bracket = build_bracket(nplayers, nrounds)
+        if not bracket:
+            failures += 1
+            continue
+        if cmp(bracket, best):
+            best = bracket
+
+    if failures:
+        print(f"Failures: {failures}/{iters} searching for best bracket")
+    return best
+
+def build_bracket(nplayers: int, nrounds: int) -> Bracket:
+    """Attempt to build a bracket with the specified parameters.  Return ``None`` if
+    unable to (typically because the constraints are too tight).
+    """
     for _ in range(NTRIES):
         bracket = Bracket(nplayers, nrounds)
         try:
@@ -447,13 +475,43 @@ def main() -> int:
             print(e)
             print("Rebuilding bracket...")
             continue
-        stats = bracket.evaluate()
-        bracket.print()
+        bracket.evaluate()
         break
 
-    if not stats:
-        print(f"Unable to build bracket after {NTRIES} attempts")
+    if not bracket.stats:
+        return None
+    return bracket
 
+def main() -> int:
+    """Usage::
+
+      $ python seed_round <nplayers> <nrounds> [<iterations>]
+
+    where ``iterations`` indicates the number of iterations to use in searching for the
+    best performing bracket; if ``iterations`` is not specified, the first bracket
+    generated will be returned
+
+    To do:
+
+    - Print a prettier/more structured version of the final bracket
+    - Develop a closed-form solution for optimality
+    """
+    best_iter = None
+    nplayers  = int(sys.argv[1])
+    nrounds   = int(sys.argv[2])
+    if len(sys.argv) > 3:
+        best_iter = int(sys.argv[3])
+
+    if best_iter:
+        bracket = best_bracket(nplayers, nrounds, best_iter)
+        assert bracket
+    else:
+        bracket = build_bracket(nplayers, nrounds)
+        if not bracket:
+            print(f"Unable to build bracket after {NTRIES} attempts")
+            return 1
+
+    bracket.print()
     return 0
 
 if __name__ == "__main__":
