@@ -37,20 +37,21 @@ Matchup  = tuple[Team, Team]
 class PlayerData(Enum):
     """Statistics for evaluating brackets.
     """
+    DIST_PARTS   = "Distinct Partners"
     DIST_OPPS    = "Distinct Opponents"
-    DIST_INTS    = "Distinct Interactions"
+    DIST_INTS    = "Distinct Players (any role)"
     DIST_PARTS_2 = "Distinct 2nd-level Partners"
     DIST_OPPS_2  = "Distinct 2nd-level Opponents"
-    DIST_INTS_2  = "Distinct 2nd-level Interactions"
-    MEAN_PARTS_2 = "Mean 2nd-level Partners"
-    MEAN_OPPS_2  = "Mean 2nd-level Opponents"
-    MEAN_INTS_2  = "Mean 2nd-level Interactions"
-    MIN_PARTS_2  = "Minimum 2nd-level Partners"
-    MIN_OPPS_2   = "Minimum 2nd-level Opponents"
-    MIN_INTS_2   = "Minimum 2nd-level Interactions"
-    MAX_PARTS_2  = "Maximum 2nd-level Partners"
-    MAX_OPPS_2   = "Maximum 2nd-level Opponents"
-    MAX_INTS_2   = "Maximum 2nd-level Interactions"
+    DIST_INTS_2  = "Distinct 2nd-level Players (any role)"
+    MEAN_PARTS_2 = "Mean 2nd-level Partnerships"
+    MEAN_OPPS_2  = "Mean 2nd-level Oppositions"
+    MEAN_INTS_2  = "Mean 2nd-level Interactions (any)"
+    MIN_PARTS_2  = "Minimum 2nd-level Partnerships"
+    MIN_OPPS_2   = "Minimum 2nd-level Oppositions"
+    MIN_INTS_2   = "Minimum 2nd-level Interactions (any)"
+    MAX_PARTS_2  = "Maximum 2nd-level Partnerships"
+    MAX_OPPS_2   = "Maximum 2nd-level Oppositions"
+    MAX_INTS_2   = "Maximum 2nd-level Interactions (any)"
 
 FLOAT_PREC = 2
 
@@ -242,6 +243,8 @@ class Bracket:
             for datum in PlayerData:
                 pl_stats[datum] = 0
 
+            pl_stats[PlayerData.DIST_PARTS] += len(self.part_hist[player])
+
             opp_list = self.opp_hist[player].copy()
             pl_stats[PlayerData.DIST_OPPS] = len(opp_list) - opp_list.count(0)
 
@@ -319,8 +322,8 @@ class Bracket:
             for idx, matchup in enumerate(self.rnd_matchups[rnd]):
                 print(f"    {idx:2d}: {matchup[0]} vs. {matchup[1]}")
 
-        print(f"\n{'Stat':32}\tMin\tMax\tMean\tStddev")
-        print(f"{'----':32}\t---\t---\t----\t------")
+        print(f"\n{'Stat':37}\tMin\tMax\tMean\tStddev")
+        print(f"{'----':37}\t---\t---\t----\t------")
         for datum in PlayerData:
             stats_agg = self.stats[datum]
             print(f"{datum.value:32}\t{stats_agg[0]}\t{stats_agg[1]}\t{stats_agg[2]:.2f}\t" +
