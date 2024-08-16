@@ -39,19 +39,16 @@ class PlayerData(Enum):
     """
     DIST_PARTS   = "Distinct Partners"
     DIST_OPPS    = "Distinct Opponents"
-    DIST_INTS    = "Distinct Players (any role)"
+    DIST_INTS    = "Distinct Interactions"
     DIST_PARTS_2 = "Distinct 2nd-level Partners"
     DIST_OPPS_2  = "Distinct 2nd-level Opponents"
-    DIST_INTS_2  = "Distinct 2nd-level Players (any role)"
+    DIST_INTS_2  = "Distinct 2nd-level Interactions"
     MEAN_PARTS_2 = "Mean 2nd-level Partnerships"
     MEAN_OPPS_2  = "Mean 2nd-level Oppositions"
-    MEAN_INTS_2  = "Mean 2nd-level Interactions (any)"
-    MIN_PARTS_2  = "Minimum 2nd-level Partnerships"
-    MIN_OPPS_2   = "Minimum 2nd-level Oppositions"
-    MIN_INTS_2   = "Minimum 2nd-level Interactions (any)"
-    MAX_PARTS_2  = "Maximum 2nd-level Partnerships"
-    MAX_OPPS_2   = "Maximum 2nd-level Oppositions"
-    MAX_INTS_2   = "Maximum 2nd-level Interactions (any)"
+    MEAN_INTS_2  = "Mean 2nd-level Interactions"
+    SPRD_PARTS_2 = "2nd-level Partnerships Spread"
+    SPRD_OPPS_2  = "2nd-level Oppositions Spread"
+    SPRD_INTS_2  = "2nd-level Interactions Spread"
 
 EvalStats = dict[PlayerData, list[Number]]  # list contains [min, max, mean, stdev]
 
@@ -316,18 +313,15 @@ class Bracket:
 
             pl_stats[PlayerData.DIST_PARTS_2] = len(l2_part) - l2_part.count(0)
             pl_stats[PlayerData.MEAN_PARTS_2] = round_val(mean(l2_part), 1)
-            pl_stats[PlayerData.MIN_PARTS_2]  = min(l2_part)
-            pl_stats[PlayerData.MAX_PARTS_2]  = max(l2_part)
+            pl_stats[PlayerData.SPRD_PARTS_2] = max(l2_part) - min(l2_part)
 
             pl_stats[PlayerData.DIST_OPPS_2]  = len(l2_opp) - l2_opp.count(0)
             pl_stats[PlayerData.MEAN_OPPS_2]  = round_val(mean(l2_opp), 1)
-            pl_stats[PlayerData.MIN_OPPS_2]   = min(l2_opp)
-            pl_stats[PlayerData.MAX_OPPS_2]   = max(l2_opp)
+            pl_stats[PlayerData.SPRD_OPPS_2]  = max(l2_opp) - min(l2_opp)
 
             pl_stats[PlayerData.DIST_INTS_2]  = len(l2_int) - l2_int.count(0)
             pl_stats[PlayerData.MEAN_INTS_2]  = round_val(mean(l2_int), 1)
-            pl_stats[PlayerData.MIN_INTS_2]   = min(l2_int)
-            pl_stats[PlayerData.MAX_INTS_2]   = max(l2_int)
+            pl_stats[PlayerData.SPRD_INTS_2]  = max(l2_int) - min(l2_int)
 
             for datum in PlayerData:
                 all_stats[datum].append(pl_stats[datum])
@@ -339,6 +333,38 @@ class Bracket:
                 stats_agg.append(func(all_stats[datum]))
             self.stats[datum] = stats_agg
         return self.stats
+
+    def print_optimal(self) -> None:
+        """
+        """
+        # level 1 interactions (total)
+        npart        = self.nrounds
+        nopp         = self.nrounds * 2
+        nint         = self.nrounds * 3
+        # level 2 interactions (total)
+        npart_l2     = npart * (self.nrounds - 1)
+        nopp_l2      = nopp  * (self.nrounds - 1) * 2
+        nint_l2      = nint  * (self.nrounds - 1) * 3
+        # level 2 interactions per player (expected)
+        exp_npart_l2 = npart_l2 / (self.nplayers - 1)
+        exp_nopp_l2  = nopp_l2  / (self.nplayers - 1)
+        exp_nint_l2  = nint_l2  / (self.nplayers - 1)
+
+        optimal = {}
+        optimal[PlayerData.DIST_PARTS]   = min(npart,    self.nplayers - 1)
+        optimal[PlayerData.DIST_OPPS]    = min(nopp,     self.nplayers - 1)
+        optimal[PlayerData.DIST_INTS]    = min(nint,     self.nplayers - 1)
+        optimal[PlayerData.DIST_PARTS_2] = min(npart_l2, self.nplayers - 1)
+        optimal[PlayerData.DIST_OPPS_2]  = min(nopp_l2,  self.nplayers - 1)
+        optimal[PlayerData.DIST_INTS_2]  = min(nint_l2,  self.nplayers - 1)
+        optimal[PlayerData.MEAN_PARTS_2] = exp_npart_l2
+        optimal[PlayerData.MEAN_OPPS_2]  = exp_nopp_l2
+        optimal[PlayerData.MEAN_INTS_2]  = exp_nint_l2
+
+        print(f"\n{'Optimal':32}\tValue")
+        print(f"{'-------':32}\t-----")
+        for datum, val in optimal.items():
+            print(f"{datum.value:32}\t{round_val(val)}")
 
     def print(self) -> None:
         """Print bye, team, and matchup information by round.
@@ -353,12 +379,13 @@ class Bracket:
             for idx, matchup in enumerate(self.rnd_matchups[rnd]):
                 print(f"    {idx:2d}: {matchup[0]} vs. {matchup[1]}")
 
-        print(f"\n{'Stat':37}\tMin\tMax\tMean\tStddev")
-        print(f"{'----':37}\t---\t---\t----\t------")
+        print(f"\n{'Stat':32}\tMin\tMax\tMean\tStddev")
+        print(f"{'----':32}\t---\t---\t----\t------")
         for datum in PlayerData:
             stats_agg = self.stats[datum]
-            print(f"{datum.value:32}\t{stats_agg[0]}\t{stats_agg[1]}\t{stats_agg[2]:.2f}\t" +
-                  f"{stats_agg[3]:.2f}")
+            print(f"{datum.value:32}\t{round_val(stats_agg[0])}\t{round_val(stats_agg[1])}\t" +
+                  f"{round_val(stats_agg[2])}\t{round_val(stats_agg[3])}")
+        self.print_optimal()
         self.print_retries()
 
     def print_retries(self) -> None:
@@ -392,7 +419,7 @@ def main() -> int:
 
     To do:
 
-    - Compute optimal stat values as reference/benchmark for evaluations
+    - Compute overall evaluation metrics based on divergence from optimial
     - Build multiple brackets and choose the one with the highest evaluation
     - Print a prettier/more structured version of the final bracket
     - Develop a closed-form solution for optimality
