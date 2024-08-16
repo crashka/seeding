@@ -269,8 +269,7 @@ class Bracket:
         """
         for rnd in range(self.nrounds):
             print(f"\nRound {rnd}:")
-            for byes in self.rnd_byes[rnd]:
-                print(f"  Byes: {byes}")
+            print(f"  Byes: {self.rnd_byes[rnd]}")
             print("  Teams:")
             for idx, team in enumerate(self.rnd_teams[rnd]):
                 print(f"    {idx:2d}: {team}")
