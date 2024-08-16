@@ -55,6 +55,15 @@ class PlayerData(Enum):
 
 FLOAT_PREC = 2
 
+# opponent threshold progression for specified number of rounds (or multiples thereof)--
+# otherwise, fall back to default proportional progression (represented by key `None`);
+# this is definitely HACKY, hardwiring a custom config for the (currently) standard
+# eight-round format (though also not otherwise unreasonable)!
+OPP_THRESH = {
+    8:    [1, 1, 1, 1, 1, 2, 2, 2],
+    None: [1, 2]
+}
+
 def round_val(val: Number, prec: int = FLOAT_PREC) -> Number:
     """Provide the appropriate level of rounding for a stat value (does not change the
     number type); passthrough for non-numeric types (e.g. bool or str).
@@ -74,6 +83,9 @@ class Bracket:
     nseats:    int
     nteams:    int
     nmatchups: int
+
+    # other parameters
+    opp_thresh:   list[int]       # max number of times an opponent can be seen
 
     # keeping track of rounds
     rnd_byes:     list[Byes]
@@ -101,6 +113,15 @@ class Bracket:
         self.nseats       = self.nplayers - self.nbyes
         self.nteams       = self.nseats // 2
         self.nmatchups    = self.nteams // 2
+
+        if self.nrounds in OPP_THRESH:
+            self.opp_thresh = OPP_THRESH[self.nrounds]
+        else:
+            self.opp_thresh = OPP_THRESH[None]
+            # repeat final threshold as a backstop, if it might be needed
+            if self.nrounds % len(self.opp_thresh) > 0:
+                self.opp_thresh.append(self.opp_thresh[-1])
+        assert self.opp_thresh and isinstance(self.opp_thresh, list)
 
         self.rnd_byes     = []
         self.rnd_teams    = []
@@ -131,6 +152,7 @@ class Bracket:
         """Pick teams for the current round; we avoid picking previous partners, retrying
         the selection process if no qualifying candidates remain.
         """
+        RETRIES = 10
         teams = set()
         all_players = range(self.nplayers)
         rnd_players = set(all_players) - byes
@@ -138,17 +160,20 @@ class Bracket:
         # pick partners at random, given that we don't have some kind of smart rotational
         # algorithm for this; we outright exclude previous partners (since we don't have
         # to try and minimize partnerships, since we are asserting more players than
-        # rounds)
-        for _ in range(10):
+        # rounds) as well as previous opponents (though we may have to revisit this one,
+        # if/when the numbers say we have to relax this, as in `pick_matchups()`)
+        for _ in range(RETRIES):
             available = rnd_players.copy()
             while available:
                 player = random.choice(list(available))
                 available.remove(player)
-                if available <= self.part_hist[player]:
+                disqual_part = self.part_hist[player]
+                disqual_opp = {other for other in available
+                               if self.opp_hist[player][other] > 0}
+                if available <= disqual_part | disqual_opp:
                     self.retry_team[rnd].append(len(teams))
-                    #print(f"Retry picking teams (round {rnd}, team idx {len(teams)})")
                     break
-                picklist = list(available - self.part_hist[player])
+                picklist = list(available - disqual_part - disqual_opp)
                 partner = random.choice(picklist)
                 available.remove(partner)
                 teams.add((player, partner))
@@ -174,9 +199,13 @@ class Bracket:
         previous partners for either player, and set a (currently suboptimal) threshold
         for maximum times an opposing player is seen.
         """
-        OPP_THRESH = 2
+        RETRIES = 100
+        # local parameters/thresholds
+        thresh_allot = self.nrounds // len(self.opp_thresh)
+        opp_thresh = self.opp_thresh[rnd // thresh_allot]
+
         matchups = set()
-        for _ in range(100):
+        for idx in range(RETRIES):
             available = teams.copy()
             while available:
                 team = random.choice(list(available))
@@ -187,12 +216,11 @@ class Bracket:
                     for opp in available:
                         if set(opp) & self.part_hist[player]:
                             disqual_part.add(opp)
-                        if (self.opp_hist[player][opp[0]] >= OPP_THRESH or
-                            self.opp_hist[player][opp[1]] >= OPP_THRESH):
+                        if (self.opp_hist[player][opp[0]] >= opp_thresh or
+                            self.opp_hist[player][opp[1]] >= opp_thresh):
                             disqual_opp.add(opp)
                 if available <= disqual_part | disqual_opp:
                     self.retry_match[rnd].append(len(matchups))
-                    #print(f"Retry picking matchup (round {rnd}, match idx {len(matchups)})")
                     break
                 picklist = list(available - disqual_part - disqual_opp)
                 opp = random.choice(picklist)
@@ -360,6 +388,7 @@ def main() -> int:
 
     To do:
 
+    - Compute optimal stat values as reference/benchmark for evaluations
     - Build multiple brackets and choose the one with the highest evaluation
     - Print a prettier/more structured version of the bracket
     - Develop a closed-form solution for optimality
