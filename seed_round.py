@@ -43,14 +43,14 @@ class PlayerData(Enum):
     DIST_PARTS_2 = "Distinct 2nd-level Partners"
     DIST_OPPS_2  = "Distinct 2nd-level Opponents"
     DIST_INTS_2  = "Distinct 2nd-level Interactions"
-    MEAN_PARTS_2 = "Mean 2nd-level Partnerships"
-    MEAN_OPPS_2  = "Mean 2nd-level Oppositions"
-    MEAN_INTS_2  = "Mean 2nd-level Interactions"
+    MEAN_PARTS_2 = "2nd-level Partnerships (avg)"
+    MEAN_OPPS_2  = "2nd-level Oppositions (avg)"
+    MEAN_INTS_2  = "2nd-level Interactions (avg)"
     SPRD_PARTS_2 = "2nd-level Partnerships Spread"
     SPRD_OPPS_2  = "2nd-level Oppositions Spread"
     SPRD_INTS_2  = "2nd-level Interactions Spread"
 
-EvalStats = dict[PlayerData, list[Number]]  # list contains [min, max, mean, stdev]
+EvalStats = dict[PlayerData, list[Number]]  # list contains [min, max, mean, stdev opt]
 
 FLOAT_PREC = 2
 
@@ -326,17 +326,6 @@ class Bracket:
             for datum in PlayerData:
                 all_stats[datum].append(pl_stats[datum])
 
-        assert len(self.stats) == 0
-        for datum in PlayerData:
-            stats_agg = []
-            for func in min, max, mean, stdev:
-                stats_agg.append(func(all_stats[datum]))
-            self.stats[datum] = stats_agg
-        return self.stats
-
-    def print_optimal(self) -> None:
-        """
-        """
         # level 1 interactions (total)
         npart        = self.nrounds
         nopp         = self.nrounds * 2
@@ -345,26 +334,30 @@ class Bracket:
         npart_l2     = npart * (self.nrounds - 1)
         nopp_l2      = nopp  * (self.nrounds - 1) * 2
         nint_l2      = nint  * (self.nrounds - 1) * 3
-        # level 2 interactions per player (expected)
+        # level 2 interactions (per player, expected)
         exp_npart_l2 = npart_l2 / (self.nplayers - 1)
         exp_nopp_l2  = nopp_l2  / (self.nplayers - 1)
         exp_nint_l2  = nint_l2  / (self.nplayers - 1)
 
-        optimal = {}
-        optimal[PlayerData.DIST_PARTS]   = min(npart,    self.nplayers - 1)
-        optimal[PlayerData.DIST_OPPS]    = min(nopp,     self.nplayers - 1)
-        optimal[PlayerData.DIST_INTS]    = min(nint,     self.nplayers - 1)
-        optimal[PlayerData.DIST_PARTS_2] = min(npart_l2, self.nplayers - 1)
-        optimal[PlayerData.DIST_OPPS_2]  = min(nopp_l2,  self.nplayers - 1)
-        optimal[PlayerData.DIST_INTS_2]  = min(nint_l2,  self.nplayers - 1)
-        optimal[PlayerData.MEAN_PARTS_2] = exp_npart_l2
-        optimal[PlayerData.MEAN_OPPS_2]  = exp_nopp_l2
-        optimal[PlayerData.MEAN_INTS_2]  = exp_nint_l2
+        opt = {}
+        opt[PlayerData.DIST_PARTS]   = min(npart,    self.nplayers - 1)
+        opt[PlayerData.DIST_OPPS]    = min(nopp,     self.nplayers - 1)
+        opt[PlayerData.DIST_INTS]    = min(nint,     self.nplayers - 1)
+        opt[PlayerData.DIST_PARTS_2] = min(npart_l2, self.nplayers - 1)
+        opt[PlayerData.DIST_OPPS_2]  = min(nopp_l2,  self.nplayers - 1)
+        opt[PlayerData.DIST_INTS_2]  = min(nint_l2,  self.nplayers - 1)
+        opt[PlayerData.MEAN_PARTS_2] = exp_npart_l2
+        opt[PlayerData.MEAN_OPPS_2]  = exp_nopp_l2
+        opt[PlayerData.MEAN_INTS_2]  = exp_nint_l2
 
-        print(f"\n{'Optimal':32}\tValue")
-        print(f"{'-------':32}\t-----")
-        for datum, val in optimal.items():
-            print(f"{datum.value:32}\t{round_val(val)}")
+        assert len(self.stats) == 0
+        for datum in PlayerData:
+            stats_agg = []
+            for func in min, max, mean, stdev:
+                stats_agg.append(func(all_stats[datum]))
+            stats_agg.append(opt.get(datum))
+            self.stats[datum] = stats_agg
+        return self.stats
 
     def print(self) -> None:
         """Print bye, team, and matchup information by round.
@@ -379,14 +372,32 @@ class Bracket:
             for idx, matchup in enumerate(self.rnd_matchups[rnd]):
                 print(f"    {idx:2d}: {matchup[0]} vs. {matchup[1]}")
 
-        print(f"\n{'Stat':32}\tMin\tMax\tMean\tStddev")
-        print(f"{'----':32}\t---\t---\t----\t------")
-        for datum in PlayerData:
-            stats_agg = self.stats[datum]
-            print(f"{datum.value:32}\t{round_val(stats_agg[0])}\t{round_val(stats_agg[1])}\t" +
-                  f"{round_val(stats_agg[2])}\t{round_val(stats_agg[3])}")
-        self.print_optimal()
+        print(f"\n{'Statistic':32}\tMin\tMax\tMean\tStddev\tOptimal")
+        print(f"{'---------':32}\t-----\t-----\t-----\t------\t-------")
+        for datum in self.stats:
+            agg = (round_val(self.stats[datum][0]),
+                   round_val(self.stats[datum][1]),
+                   round_val(self.stats[datum][2]),
+                   round_val(self.stats[datum][3]),
+                   round_val(self.stats[datum][4]) or '')
+            print(f"{datum.value:32}\t{agg[0]}\t{agg[1]}\t{agg[2]}\t{agg[3]}\t{agg[4]}")
+
+        self.print_divergence()
         self.print_retries()
+
+    def print_divergence(self) -> None:
+        """Print divergence from optimal value for min, max, and mean stats (if
+        applicable).
+        """
+        print(f"\n{'Divergence from Optimal':32}\tMin\tMax\tMean")
+        print(f"{'-----------------------':32}\t-----\t-----\t-----")
+        for datum, vals in self.stats.items():
+            if vals[4] is None:
+                continue
+            div = (round_val(vals[0] - vals[4]),
+                   round_val(vals[1] - vals[4]),
+                   round_val(vals[2] - vals[4]))
+            print(f"{datum.value:32}\t{div[0]}\t{div[1]}\t{div[2]}")
 
     def print_retries(self) -> None:
         """Print some statistical information about retries when picking teams and
