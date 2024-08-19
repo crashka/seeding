@@ -35,31 +35,31 @@ like this (only the first round shown):
 Round 0:
   Byes: {0, 1}
   Teams:
-     0: (28, 33)
-     1: (11, 7)
-     2: (2, 17)
-     3: (3, 27)
-     4: (26, 14)
-     5: (6, 5)
-     6: (10, 24)
-     7: (9, 22)
-     8: (16, 19)
-     9: (20, 4)
-    10: (18, 32)
-    11: (29, 12)
-    12: (13, 25)
-    13: (8, 21)
-    14: (23, 30)
-    15: (15, 31)
+     0: (20, 5)
+     1: (30, 8)
+     2: (25, 3)
+     3: (21, 29)
+     4: (32, 14)
+     5: (2, 10)
+     6: (27, 4)
+     7: (18, 16)
+     8: (15, 13)
+     9: (17, 9)
+    10: (28, 22)
+    11: (23, 12)
+    12: (6, 26)
+    13: (31, 19)
+    14: (33, 11)
+    15: (7, 24)
   Matchups:
-     0: (13, 25) vs. (11, 7)
-     1: (10, 24) vs. (23, 30)
-     2: (16, 19) vs. (9, 22)
-     3: (2, 17) vs. (29, 12)
-     4: (15, 31) vs. (18, 32)
-     5: (6, 5) vs. (26, 14)
-     6: (20, 4) vs. (3, 27)
-     7: (28, 33) vs. (8, 21)
+     0: (27, 4) vs. (21, 29)
+     1: (30, 8) vs. (20, 5)
+     2: (7, 24) vs. (23, 12)
+     3: (33, 11) vs. (28, 22)
+     4: (31, 19) vs. (17, 9)
+     5: (25, 3) vs. (32, 14)
+     6: (6, 26) vs. (2, 10)
+     7: (18, 16) vs. (15, 13)
 ```
 
 ## Statistics
@@ -69,30 +69,30 @@ Sample statistics output for the above bracket:
 ```
 Statistic                          Min     Max     Mean    Stddev  Optimal
 ---------                          -----   -----   -----   ------  -------
-Distinct Partners                  7       8       7.76    0.44    7.76
-Distinct Opponents                 12      16      13.58   1.0     15.52
-Distinct Interactions              20      24      21.33   1.19    23.27
-Distinct 2nd-level Partners        25      31      27.94   1.48    32
-Distinct 2nd-level Opponents       32      32      32      0.0     32
-Distinct 2nd-level Interactions    32      32      32      0.0     32
-2nd-level Partnerships (avg)       1.4     1.8     1.65    0.11    1.7
-2nd-level Oppositions (avg)        5.2     7.3     6.1     0.47    6.79
-2nd-level Interactions (avg)       13.7    16.9    14.82   0.85    15.27
-2nd-level Partnerships Spread      3       5       3.88    0.6
-2nd-level Oppositions Spread       6       11      8.52    1.54
-2nd-level Interactions Spread      5       9       7.09    1.18
+Distinct Partners                  7       8       7.53    0.51    7.53
+Distinct Opponents                 12      16      13.65   1.25    15.06
+Distinct Interactions              19      24      21.18   1.64    22.59
+Distinct 2nd-level Partners        25      30      27.76   1.28    33
+Distinct 2nd-level Opponents       33      33      33      0.0     33
+Distinct 2nd-level Interactions    33      33      33      0.0     33
+2nd-level Partnerships (avg)       1.3     1.6     1.49    0.1     1.6
+2nd-level Oppositions (avg)        5.0     6.9     5.79    0.55    6.39
+2nd-level Interactions (avg)       12.4    15.7    13.87   1.02    14.37
+2nd-level Partnerships Spread      3       5       3.71    0.58
+2nd-level Oppositions Spread       6       9       7.26    1.14
+2nd-level Interactions Spread      5       9       6.94    1.07
 
 Divergence from Optimal            Min     Max     Mean
 -----------------------            -----   -----   -----
-Distinct Partners                  -0.76   0.24    0.0
-Distinct Opponents                 -3.52   0.48    -1.94
-Distinct Interactions              -3.27   0.73    -1.94
-Distinct 2nd-level Partners        -7      -1      -4.06
+Distinct Partners                  -0.53   0.47    0.0
+Distinct Opponents                 -3.06   0.94    -1.41
+Distinct Interactions              -3.59   1.41    -1.41
+Distinct 2nd-level Partners        -8      -3      -5.24
 Distinct 2nd-level Opponents       0       0       0
 Distinct 2nd-level Interactions    0       0       0
-2nd-level Partnerships (avg)       -0.3    0.1     -0.04
-2nd-level Oppositions (avg)        -1.59   0.51    -0.69
-2nd-level Interactions (avg)       -1.57   1.63    -0.45
+2nd-level Partnerships (avg)       -0.3    0.0     -0.11
+2nd-level Oppositions (avg)        -1.39   0.51    -0.59
+2nd-level Interactions (avg)       -1.97   1.33    -0.5
 ```
 
 *Explanation of stats coming soon...*
