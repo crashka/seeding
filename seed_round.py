@@ -21,6 +21,9 @@ from numbers import Number
 from statistics import mean, stdev
 import random
 import sys
+from os import environ
+
+DEBUG = int(environ.get('SEEDING_DEBUG') or 0)
 
 ##################
 # module library #
@@ -142,7 +145,12 @@ class Bracket:
         byes = {x % self.nplayers for x in range(start, start + self.nbyes)}
         assert len(byes) == self.nbyes
         assert not (self.bye_hist & byes)
+        return self.add_byes(rnd, byes)
 
+    def add_byes(self, rnd: int, byes: Byes) -> Byes:
+        """
+        """
+        assert rnd == len(self.rnd_byes)
         self.bye_hist |= byes
         self.rnd_byes.append(byes)
         return byes
@@ -181,11 +189,16 @@ class Bracket:
                 continue
             break
         if len(teams) < self.nteams:
-            self.print_retries()
+            not DEBUG or self.print_retries()
             team_idx = self.retry_team[rnd][-1]
             raise RuntimeError(f"Unable to pick teams (round {rnd}, team idx {team_idx})")
         assert len(teams) % 2 == 0
+        return self.add_teams(rnd, teams)
 
+    def add_teams(self, rnd: int, teams: set[Team]) -> set[Team]:
+        """
+        """
+        assert rnd == len(self.rnd_teams)
         for team in teams:
             p1, p2 = team
             self.part_hist[p1].add(p2)
@@ -230,11 +243,16 @@ class Bracket:
                 continue
             break
         if len(matchups) < self.nmatchups:
-            self.print_retries()
+            not DEBUG or self.print_retries()
             match_idx = self.retry_match[rnd][-1]
             raise RuntimeError(f"Unable to pick matchups (round {rnd}, match idx {match_idx})")
         assert len(teams) % 2 == 0
+        return self.add_matchups(rnd, matchups)
 
+    def add_matchups(self, rnd: int, matchups: set[Matchup]) -> set[Matchup]:
+        """
+        """
+        assert rnd == len(self.rnd_matchups)
         for matchup in matchups:
             (p1, p2), (p3, p4) = matchup
             self.opp_hist[p1][p3] += 1
@@ -327,9 +345,10 @@ class Bracket:
                 all_stats[datum].append(pl_stats[datum])
 
         # level 1 interactions (total)
-        npart        = self.nrounds
-        nopp         = self.nrounds * 2
-        nint         = self.nrounds * 3
+        tmatches     = self.nseats * self.nrounds
+        npart        = tmatches / self.nplayers
+        nopp         = tmatches / self.nplayers * 2
+        nint         = tmatches / self.nplayers * 3
         # level 2 interactions (total)
         npart_l2     = npart * (self.nrounds - 1)
         nopp_l2      = nopp  * (self.nrounds - 1) * 2
@@ -382,7 +401,7 @@ class Bracket:
             print(f"{datum.value:32}\t{agg[0]}\t{agg[1]}\t{agg[2]}\t{agg[3]}\t{agg[4]}")
 
         self.print_divergence()
-        self.print_retries()
+        not DEBUG or self.print_retries()
 
     def print_divergence(self) -> None:
         """Print divergence from optimal value for min, max, and mean stats (if
@@ -472,8 +491,9 @@ def build_bracket(nplayers: int, nrounds: int) -> Bracket:
         try:
             bracket.build()
         except RuntimeError as e:
-            print(e)
-            print("Rebuilding bracket...")
+            if DEBUG:
+                print(e)
+                print("Rebuilding bracket...")
             continue
         bracket.evaluate()
         break
@@ -489,7 +509,7 @@ def main() -> int:
 
     where ``iterations`` indicates the number of iterations to use in searching for the
     best performing bracket; if ``iterations`` is not specified, the first bracket
-    generated will be returned
+    generated will be returned.
 
     To do:
 

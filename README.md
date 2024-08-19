@@ -67,32 +67,32 @@ Round 0:
 Sample statistics output for the above bracket:
 
 ```
-Statistic                           Min     Max     Mean    Stddev  Optimal
----------                           -----   -----   -----   ------  -------
-Distinct Partners                   7       8       7.53    0.51    8
-Distinct Opponents                  12      16      13.47   0.96    16
-Distinct Interactions               19      24      21      1.33    24
-Distinct 2nd-level Partners         25      31      28.24   1.52    33
-Distinct 2nd-level Opponents        33      33      33      0.0     33
-Distinct 2nd-level Interactions     33      33      33      0.0     33
-2nd-level Partnerships (avg)        1.3     1.7     1.5     0.1     1.7
-2nd-level Oppositions (avg)         5.1     6.8     5.71    0.4     6.79
-2nd-level Interactions (avg)        12.4    15.7    13.75   0.82    15.27
-2nd-level Partnerships Spread       3       4       3.59    0.5
-2nd-level Oppositions Spread        5       10      7.76    1.39
-2nd-level Interactions Spread       6       11      7.85    1.21
+Statistic                          Min     Max     Mean    Stddev  Optimal
+---------                          -----   -----   -----   ------  -------
+Distinct Partners                  7       8       7.76    0.44    7.76
+Distinct Opponents                 12      16      13.58   1.0     15.52
+Distinct Interactions              20      24      21.33   1.19    23.27
+Distinct 2nd-level Partners        25      31      27.94   1.48    32
+Distinct 2nd-level Opponents       32      32      32      0.0     32
+Distinct 2nd-level Interactions    32      32      32      0.0     32
+2nd-level Partnerships (avg)       1.4     1.8     1.65    0.11    1.7
+2nd-level Oppositions (avg)        5.2     7.3     6.1     0.47    6.79
+2nd-level Interactions (avg)       13.7    16.9    14.82   0.85    15.27
+2nd-level Partnerships Spread      3       5       3.88    0.6
+2nd-level Oppositions Spread       6       11      8.52    1.54
+2nd-level Interactions Spread      5       9       7.09    1.18
 
-Divergence from Optimal             Min     Max     Mean
------------------------             -----   -----   -----
-Distinct Partners                   -1      0       -0.47
-Distinct Opponents                  -4      0       -2.53
-Distinct Interactions               -5      0       -3
-Distinct 2nd-level Partners         -8      -2      -4.76
-Distinct 2nd-level Opponents        0       0       0
-Distinct 2nd-level Interactions     0       0       0
-2nd-level Partnerships (avg)        -0.4    0.0     -0.19
-2nd-level Oppositions (avg)         -1.69   0.01    -1.08
-2nd-level Interactions (avg)        -2.87   0.43    -1.53
+Divergence from Optimal            Min     Max     Mean
+-----------------------            -----   -----   -----
+Distinct Partners                  -0.76   0.24    0.0
+Distinct Opponents                 -3.52   0.48    -1.94
+Distinct Interactions              -3.27   0.73    -1.94
+Distinct 2nd-level Partners        -7      -1      -4.06
+Distinct 2nd-level Opponents       0       0       0
+Distinct 2nd-level Interactions    0       0       0
+2nd-level Partnerships (avg)       -0.3    0.1     -0.04
+2nd-level Oppositions (avg)        -1.59   0.51    -0.69
+2nd-level Interactions (avg)       -1.57   1.63    -0.45
 ```
 
 *Explanation of stats coming soon...*
