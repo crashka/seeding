@@ -43,9 +43,9 @@ class PlayerData(Enum):
     DIST_PARTS   = "Distinct Partners"
     DIST_OPPS    = "Distinct Opponents"
     DIST_INTS    = "Distinct Interactions"
-    DIST_PARTS_2 = "Distinct 2nd-level Partners"
-    DIST_OPPS_2  = "Distinct 2nd-level Opponents"
-    DIST_INTS_2  = "Distinct 2nd-level Interactions"
+    REPT_PARTS   = "Repeat Partners"
+    REPT_OPPS    = "Repeat Opponents"
+    REPT_INTS    = "Repeat Interactions"
     MEAN_PARTS_2 = "2nd-level Partnerships (avg)"
     MEAN_OPPS_2  = "2nd-level Oppositions (avg)"
     MEAN_INTS_2  = "2nd-level Interactions (avg)"
@@ -305,6 +305,11 @@ class Bracket:
             for other in range(self.nplayers):
                 if other == player:
                     continue
+                if (count := self.opp_hist[player][other]) > 1:
+                    pl_stats[PlayerData.REPT_OPPS] += count - 1
+                    pl_stats[PlayerData.REPT_INTS] += count - 1
+                    if other in self.part_hist[player]:
+                        pl_stats[PlayerData.REPT_INTS] += 1
                 # OPEN ISSUE: should we include L1 interactions in L2 tabulation???
                 # tabulate partner path (doesn't touch l2_opp)
                 if other in self.part_hist[player]:
@@ -329,15 +334,12 @@ class Bracket:
             del l2_opp[player]
             del l2_int[player]
 
-            pl_stats[PlayerData.DIST_PARTS_2] = len(l2_part) - l2_part.count(0)
             pl_stats[PlayerData.MEAN_PARTS_2] = round_val(mean(l2_part), 1)
             pl_stats[PlayerData.SPRD_PARTS_2] = max(l2_part) - min(l2_part)
 
-            pl_stats[PlayerData.DIST_OPPS_2]  = len(l2_opp) - l2_opp.count(0)
             pl_stats[PlayerData.MEAN_OPPS_2]  = round_val(mean(l2_opp), 1)
             pl_stats[PlayerData.SPRD_OPPS_2]  = max(l2_opp) - min(l2_opp)
 
-            pl_stats[PlayerData.DIST_INTS_2]  = len(l2_int) - l2_int.count(0)
             pl_stats[PlayerData.MEAN_INTS_2]  = round_val(mean(l2_int), 1)
             pl_stats[PlayerData.SPRD_INTS_2]  = max(l2_int) - min(l2_int)
 
@@ -359,12 +361,9 @@ class Bracket:
         exp_nint_l2  = nint_l2  / (self.nplayers - 1)
 
         opt = {}
-        opt[PlayerData.DIST_PARTS]   = min(npart,    self.nplayers - 1)
-        opt[PlayerData.DIST_OPPS]    = min(nopp,     self.nplayers - 1)
-        opt[PlayerData.DIST_INTS]    = min(nint,     self.nplayers - 1)
-        opt[PlayerData.DIST_PARTS_2] = min(npart_l2, self.nplayers - 1)
-        opt[PlayerData.DIST_OPPS_2]  = min(nopp_l2,  self.nplayers - 1)
-        opt[PlayerData.DIST_INTS_2]  = min(nint_l2,  self.nplayers - 1)
+        opt[PlayerData.DIST_PARTS]   = min(npart, self.nplayers - 1)
+        opt[PlayerData.DIST_OPPS]    = min(nopp,  self.nplayers - 1)
+        opt[PlayerData.DIST_INTS]    = min(nint,  self.nplayers - 1)
         opt[PlayerData.MEAN_PARTS_2] = exp_npart_l2
         opt[PlayerData.MEAN_OPPS_2]  = exp_nopp_l2
         opt[PlayerData.MEAN_INTS_2]  = exp_nint_l2
@@ -439,7 +438,7 @@ class Bracket:
 # command line #
 ################
 
-NTRIES = 20
+NTRIES = 50
 
 def best_bracket(nplayers: int, nrounds: int, iters: int) -> Bracket:
     """Find the bracket with the best performing evaluation metrics.
@@ -449,7 +448,7 @@ def best_bracket(nplayers: int, nrounds: int, iters: int) -> Bracket:
     """
     def cmp(b1: Bracket, b2: Bracket) -> int:
         """Return `True` if `b1` scores higher than `b2`, `False` if `b1` scores lower
-        than `b2`.
+        than `b2` - Version 1.
         """
         if not b2:
             return True
@@ -468,6 +467,27 @@ def best_bracket(nplayers: int, nrounds: int, iters: int) -> Bracket:
             else:
                 return sprd_int1[2] < sprd_int2[2]
 
+    def cmp2(b1: Bracket, b2: Bracket) -> int:
+        """Return `True` if `b1` scores higher than `b2`, `False` if `b1` scores lower
+        than `b2` - Version 2.
+        """
+        if not b2:
+            return True
+        rept_int1 = b1.stats[PlayerData.REPT_INTS]
+        rept_int2 = b2.stats[PlayerData.REPT_INTS]
+        dist_int1 = b1.stats[PlayerData.DIST_INTS]
+        dist_int2 = b2.stats[PlayerData.DIST_INTS]
+        # criterion 1: lowest maximum repeat interactions
+        # criterion 2: highest minimum distinct interactions (direct)
+        # criterion 3: lowest mean repeat interactions
+        if rept_int1[1] != rept_int2[1]:
+            return rept_int1[1] < rept_int2[1]
+        else:
+            if dist_int1[0] != dist_int2[0]:
+                return dist_int1[0] > dist_int2[0]
+            else:
+                return rept_int1[2] < rept_int2[2]
+
     best = None
     failures = 0
     for _ in range(iters):
@@ -475,7 +495,7 @@ def best_bracket(nplayers: int, nrounds: int, iters: int) -> Bracket:
         if not bracket:
             failures += 1
             continue
-        if cmp(bracket, best):
+        if cmp2(bracket, best):
             best = bracket
 
     if failures:
