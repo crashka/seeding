@@ -12,7 +12,7 @@ from seed_round import Bracket
 def main() -> int:
     """Usage::
 
-      $ python seed_eval <nplayers> <nrounds> <filename>
+      $ python -m seed_eval <nplayers> <nrounds> <filename>
 
     The input file is expected to be a CSV where each row represents a round in the
     bracket, and the team/matchup designations are specified in each group of four value
