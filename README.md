@@ -35,31 +35,31 @@ like this (only the first round shown):
 Round 0:
   Byes: {0, 1}
   Teams:
-     0: (20, 5)
-     1: (30, 8)
-     2: (25, 3)
-     3: (21, 29)
-     4: (32, 14)
-     5: (2, 10)
-     6: (27, 4)
-     7: (18, 16)
-     8: (15, 13)
-     9: (17, 9)
-    10: (28, 22)
-    11: (23, 12)
-    12: (6, 26)
-    13: (31, 19)
-    14: (33, 11)
-    15: (7, 24)
+     0: (22, 15)
+     1: (8, 4)
+     2: (29, 7)
+     3: (27, 30)
+     4: (24, 20)
+     5: (21, 3)
+     6: (23, 13)
+     7: (12, 19)
+     8: (17, 9)
+     9: (26, 10)
+    10: (5, 32)
+    11: (2, 6)
+    12: (28, 25)
+    13: (16, 14)
+    14: (31, 18)
+    15: (11, 33)
   Matchups:
-     0: (27, 4) vs. (21, 29)
-     1: (30, 8) vs. (20, 5)
-     2: (7, 24) vs. (23, 12)
-     3: (33, 11) vs. (28, 22)
-     4: (31, 19) vs. (17, 9)
-     5: (25, 3) vs. (32, 14)
-     6: (6, 26) vs. (2, 10)
-     7: (18, 16) vs. (15, 13)
+     0: (2, 6) vs. (27, 30)
+     1: (5, 32) vs. (11, 33)
+     2: (8, 4) vs. (24, 20)
+     3: (16, 14) vs. (17, 9)
+     4: (21, 3) vs. (12, 19)
+     5: (31, 18) vs. (26, 10)
+     6: (29, 7) vs. (28, 25)
+     7: (23, 13) vs. (22, 15)
 ```
 
 ## Statistics
@@ -67,32 +67,29 @@ Round 0:
 Sample statistics output for the above bracket:
 
 ```
-Statistic                          Min     Max     Mean    Stddev  Optimal
----------                          -----   -----   -----   ------  -------
-Distinct Partners                  7       8       7.53    0.51    7.53
-Distinct Opponents                 12      16      13.65   1.25    15.06
-Distinct Interactions              19      24      21.18   1.64    22.59
-Distinct 2nd-level Partners        25      30      27.76   1.28    33
-Distinct 2nd-level Opponents       33      33      33      0.0     33
-Distinct 2nd-level Interactions    33      33      33      0.0     33
-2nd-level Partnerships (avg)       1.3     1.6     1.49    0.1     1.6
-2nd-level Oppositions (avg)        5.0     6.9     5.79    0.55    6.39
-2nd-level Interactions (avg)       12.4    15.7    13.87   1.02    14.37
-2nd-level Partnerships Spread      3       5       3.71    0.58
-2nd-level Oppositions Spread       6       9       7.26    1.14
-2nd-level Interactions Spread      5       9       6.94    1.07
+Statistic                               Min     Max     Mean    Stddev  Optimal
+---------                               -----   -----   -----   ------  -------
+Repeat Partners                         0       0       0       0.0
+Repeat Opponents                        0       3       1.24    0.96
+Repeat Interactions                     0       3       1.24    0.96
+Distinct Partners                       7       8       7.53    0.51    7.53
+Distinct Opponents                      12      16      13.82   1.11    15.06
+Distinct Interactions                   19      24      21.35   1.47    22.59
+2nd-level Partnerships (avg)            1.3     1.6     1.49    0.1     1.6
+2nd-level Oppositions (avg)             5.0     6.8     5.86    0.5     6.39
+2nd-level Interactions (avg)            12.1    15.8    13.99   0.97    14.37
+2nd-level Partnerships Spread           3       5       3.79    0.64
+2nd-level Oppositions Spread            5       10      7.18    1.42
+2nd-level Interactions Spread           5       11      7.09    1.29
 
-Divergence from Optimal            Min     Max     Mean
------------------------            -----   -----   -----
-Distinct Partners                  -0.53   0.47    0.0
-Distinct Opponents                 -3.06   0.94    -1.41
-Distinct Interactions              -3.59   1.41    -1.41
-Distinct 2nd-level Partners        -8      -3      -5.24
-Distinct 2nd-level Opponents       0       0       0
-Distinct 2nd-level Interactions    0       0       0
-2nd-level Partnerships (avg)       -0.3    0.0     -0.11
-2nd-level Oppositions (avg)        -1.39   0.51    -0.59
-2nd-level Interactions (avg)       -1.97   1.33    -0.5
+Divergence from Optimal                 Min     Max     Mean
+-----------------------                 -----   -----   -----
+Distinct Partners                       -0.53   0.47    0.0
+Distinct Opponents                      -3.06   0.94    -1.24
+Distinct Interactions                   -3.59   1.41    -1.24
+2nd-level Partnerships (avg)            -0.3    0.0     -0.1
+2nd-level Oppositions (avg)             -1.39   0.41    -0.52
+2nd-level Interactions (avg)            -2.27   1.43    -0.39
 ```
 
 *Explanation of stats coming soon...*

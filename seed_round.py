@@ -40,12 +40,12 @@ Matchup  = tuple[Team, Team]
 class PlayerData(Enum):
     """Statistics for evaluating brackets.
     """
-    DIST_PARTS   = "Distinct Partners"
-    DIST_OPPS    = "Distinct Opponents"
-    DIST_INTS    = "Distinct Interactions"
     REPT_PARTS   = "Repeat Partners"
     REPT_OPPS    = "Repeat Opponents"
     REPT_INTS    = "Repeat Interactions"
+    DIST_PARTS   = "Distinct Partners"
+    DIST_OPPS    = "Distinct Opponents"
+    DIST_INTS    = "Distinct Interactions"
     MEAN_PARTS_2 = "2nd-level Partnerships (avg)"
     MEAN_OPPS_2  = "2nd-level Oppositions (avg)"
     MEAN_INTS_2  = "2nd-level Interactions (avg)"
@@ -148,7 +148,8 @@ class Bracket:
         return self.add_byes(rnd, byes)
 
     def add_byes(self, rnd: int, byes: Byes) -> Byes:
-        """
+        """Populate bye history structures (for either internal bracket generation, or
+        loading an external bracket for evaluation).
         """
         assert rnd == len(self.rnd_byes)
         self.bye_hist |= byes
@@ -196,7 +197,8 @@ class Bracket:
         return self.add_teams(rnd, teams)
 
     def add_teams(self, rnd: int, teams: set[Team]) -> set[Team]:
-        """
+        """Populate team/partner history structures (for either internal bracket
+        generation, or loading an external bracket for evaluation).
         """
         assert rnd == len(self.rnd_teams)
         for team in teams:
@@ -250,7 +252,8 @@ class Bracket:
         return self.add_matchups(rnd, matchups)
 
     def add_matchups(self, rnd: int, matchups: set[Matchup]) -> set[Matchup]:
-        """
+        """Populate matchup/opponent history structures (for either internal bracket
+        generation, or loading an external bracket for evaluation).
         """
         assert rnd == len(self.rnd_matchups)
         for matchup in matchups:
