@@ -53,7 +53,7 @@ class PlayerData(Enum):
     SPRD_OPPS_2  = "2nd-level Oppositions Spread"
     SPRD_INTS_2  = "2nd-level Interactions Spread"
 
-EvalStats = dict[PlayerData, list[Number]]  # list contains [min, max, mean, stdev opt]
+EvalStats = dict[PlayerData, list[Number]]  # list contains [min, max, mean, stdev, opt]
 
 FLOAT_PREC = 2
 
@@ -528,7 +528,7 @@ def build_bracket(nplayers: int, nrounds: int) -> Bracket:
 def main() -> int:
     """Usage::
 
-      $ python seed_round <nplayers> <nrounds> [<iterations>]
+      $ python -m seed_round <nplayers> <nrounds> [<iterations>]
 
     where ``iterations`` indicates the number of iterations to use in searching for the
     best performing bracket; if ``iterations`` is not specified, the first bracket
