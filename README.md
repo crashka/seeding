@@ -35,64 +35,98 @@ like this (only the first round shown):
 Round 0:
   Byes: {0, 1}
   Teams:
-     0: (22, 15)
-     1: (8, 4)
-     2: (29, 7)
-     3: (27, 30)
-     4: (24, 20)
-     5: (21, 3)
-     6: (23, 13)
-     7: (12, 19)
-     8: (17, 9)
-     9: (26, 10)
-    10: (5, 32)
-    11: (2, 6)
-    12: (28, 25)
-    13: (16, 14)
-    14: (31, 18)
-    15: (11, 33)
+     0: (8, 24)
+     1: (12, 27)
+     2: (29, 4)
+     3: (2, 17)
+     4: (18, 7)
+     5: (25, 3)
+     6: (32, 14)
+     7: (28, 16)
+     8: (11, 9)
+     9: (23, 19)
+    10: (20, 26)
+    11: (33, 22)
+    12: (6, 13)
+    13: (5, 10)
+    14: (30, 15)
+    15: (31, 21)
   Matchups:
-     0: (2, 6) vs. (27, 30)
-     1: (5, 32) vs. (11, 33)
-     2: (8, 4) vs. (24, 20)
-     3: (16, 14) vs. (17, 9)
-     4: (21, 3) vs. (12, 19)
-     5: (31, 18) vs. (26, 10)
-     6: (29, 7) vs. (28, 25)
-     7: (23, 13) vs. (22, 15)
+     0: (33, 22) vs. (18, 7)
+     1: (23, 19) vs. (2, 17)
+     2: (6, 13) vs. (31, 21)
+     3: (30, 15) vs. (11, 9)
+     4: (28, 16) vs. (5, 10)
+     5: (25, 3) vs. (32, 14)
+     6: (29, 4) vs. (20, 26)
+     7: (12, 27) vs. (8, 24)
 ```
 
 ## Statistics
 
-Sample statistics output for the above bracket:
+Here is the statistics output for the run that generated the example bracket above:
 
 ```
 Statistic                               Min     Max     Mean    Stddev  Optimal
 ---------                               -----   -----   -----   ------  -------
 Repeat Partners                         0       0       0       0.0
-Repeat Opponents                        0       3       1.24    0.96
-Repeat Interactions                     0       3       1.24    0.96
+Repeat Opponents                        0       3       1.47    0.99
+Repeat Interactions                     0       3       1.47    0.99
 Distinct Partners                       7       8       7.53    0.51    7.53
-Distinct Opponents                      12      16      13.82   1.11    15.06
-Distinct Interactions                   19      24      21.35   1.47    22.59
-2nd-level Partnerships (avg)            1.3     1.6     1.49    0.1     1.6
-2nd-level Oppositions (avg)             5.0     6.8     5.86    0.5     6.39
-2nd-level Interactions (avg)            12.1    15.8    13.99   0.97    14.37
-2nd-level Partnerships Spread           3       5       3.79    0.64
-2nd-level Oppositions Spread            5       10      7.18    1.42
-2nd-level Interactions Spread           5       11      7.09    1.29
+Distinct Opponents                      12      16      13.59   1.1     15.06
+Distinct Interactions                   19      24      21.12   1.45    22.59
+2nd-level Partnerships (avg)            1.3     1.7     1.49    0.1     1.49
+2nd-level Oppositions (avg)             5.0     6.8     5.76    0.47    6.42
+2nd-level Interactions (avg)            12.3    15.8    13.83   0.9     14.78
+2nd-level Partnerships Spread           3       5       3.74    0.57
+2nd-level Oppositions Spread            5       10      7.5     1.42
+2nd-level Interactions Spread           5       11      7.38    1.23
 
 Divergence from Optimal                 Min     Max     Mean
 -----------------------                 -----   -----   -----
 Distinct Partners                       -0.53   0.47    0.0
-Distinct Opponents                      -3.06   0.94    -1.24
-Distinct Interactions                   -3.59   1.41    -1.24
-2nd-level Partnerships (avg)            -0.3    0.0     -0.1
-2nd-level Oppositions (avg)             -1.39   0.41    -0.52
-2nd-level Interactions (avg)            -2.27   1.43    -0.39
+Distinct Opponents                      -3.06   0.94    -1.47
+Distinct Interactions                   -3.59   1.41    -1.47
+2nd-level Partnerships (avg)            -0.19   0.21    0.0
+2nd-level Oppositions (avg)             -1.42   0.38    -0.65
+2nd-level Interactions (avg)            -2.48   1.02    -0.95
 ```
 
-*Explanation of stats coming soon...*
+See next section for (partial) explanation of stats.
+
+## What is Optimal?
+
+So, let's talk through this using numbers from the above data for 34 players and 8 rounds:
+
+- 34 players means 8 tables of 4 players per round, with 2 players gettng byes
+- 8 rounds means a total of 16 byes, so players will have at most 1 bye for the entire
+  sequence (with 18 players playing all 8 rounds)
+- Every round, players who play will have 1 partner and 2 opponents, or 3 "interactions"
+- Thus, across 8 rounds, players will have a maximum of 8 partners, 16 opponents, and 24
+  interactions (7, 14, and 21, respectively, for those with a bye)
+- Since there are more players than the max number of per-player interactions, assuming
+  the objective is to have as many different interactions as possible, optimally there
+  will be no repeat interactions between players
+
+Ray solved this (i.e. no repeat interactions) for 32 and 33 players across 8 rounds (see
+the CSV files in this repo), so it should also be solvable for 34 players and above, since
+it only gets easier to avoid repeats as you add players.  The stats for the sample run
+above shows an average of 1.24 repeat interactions (for any one player) across the 8
+rounds.  Suboptimal.  Note that all of the repeats are repeat *opponents*, since the
+script has a hardwired constraint of considering only first time interactions when
+selecting partners.
+
+Side notes:
+
+- The optimal number of distinct interactions above is shown as 22.59 (instead of 24)
+  because of the 16 byes (do the math)
+- The stats for "2nd-level interactions" above refers to partners of partners, partners of
+  opponents, and opponents of opponents.  For example, if a player has on average 22.59
+  interactions with other players, and each of those interactees has `22.59 − 1 = 21.59`
+  *other* interactions of their own, then there are a total of `22.59 × 21.59 = 487.64`
+  2nd-level interactions.  If those interactions are perfectly distributed across the
+  other 33 players, then there will be an average of `487.64 ÷ 33 = 14.78` 2nd-level
+  interactions between any two players.
 
 ## To Do
 

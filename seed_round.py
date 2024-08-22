@@ -355,9 +355,9 @@ class Bracket:
         nopp         = tmatches / self.nplayers * 2
         nint         = tmatches / self.nplayers * 3
         # level 2 interactions (total)
-        npart_l2     = npart * (self.nrounds - 1)
-        nopp_l2      = nopp  * (self.nrounds - 1) * 2
-        nint_l2      = nint  * (self.nrounds - 1) * 3
+        npart_l2     = npart * (npart - 1)
+        nopp_l2      = nopp  * (nopp - 1)
+        nint_l2      = nint  * (nint - 1)
         # level 2 interactions (per player, expected)
         exp_npart_l2 = npart_l2 / (self.nplayers - 1)
         exp_nopp_l2  = nopp_l2  / (self.nplayers - 1)
