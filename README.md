@@ -109,12 +109,12 @@ So, let's talk through this using numbers from the above data for 34 players and
   will be no repeat interactions between players
 
 Ray solved this (i.e. no repeat interactions) for 32 and 33 players across 8 rounds (see
-the CSV files in this repo), so it should also be solvable for 34 players and above, since
-it only gets easier to avoid repeats as you add players.  The stats for the sample run
-above shows an average of 1.47 repeat interactions (for any one player) across the 8
-rounds.  Suboptimal.  Note that all of the repeats are repeat *opponents*, since the
-script has a hardwired constraint of considering only first time interactions when
-selecting partners.
+the `.csv` and `.stats` files in this repo), so it should also be solvable for 34 players
+and above, since it only gets easier to avoid repeats as you add players.  The stats for
+the sample run above shows an average of 1.47 repeat interactions (for any one player)
+across the 8 rounds.  Suboptimal.  Note that all of the repeats are repeat *opponents*,
+since the script has a hardwired constraint of considering only first time interactions
+when selecting partners.
 
 Side notes:
 

@@ -1,0 +1,24 @@
+
+Statistic                       	Min	Max	Mean	Stddev	Optimal
+---------                       	-----	-----	-----	------	-------
+Repeat Partners                 	0	0	0	0.0	
+Repeat Opponents                	0	0	0	0.0	
+Repeat Interactions             	0	0	0	0.0	
+Distinct Partners               	8	8	8	0.0	8.0
+Distinct Opponents              	16	16	16	0.0	16.0
+Distinct Interactions           	24	24	24	0.0	24.0
+2nd-level Partnerships (avg)    	1.8	1.8	1.8	0.0	1.81
+2nd-level Oppositions (avg)     	7.7	7.7	7.7	0.0	7.74
+2nd-level Interactions (avg)    	17.8	17.8	17.8	0.0	17.81
+2nd-level Partnerships Spread   	3	6	4.59	0.71	
+2nd-level Oppositions Spread    	5	10	7	1.22	
+2nd-level Interactions Spread   	4	4	4	0.0	
+
+Divergence from Optimal         	Min	Max	Mean
+-----------------------         	-----	-----	-----
+Distinct Partners               	0.0	0.0	0.0
+Distinct Opponents              	0.0	0.0	0.0
+Distinct Interactions           	0.0	0.0	0.0
+2nd-level Partnerships (avg)    	-0.01	-0.01	-0.01
+2nd-level Oppositions (avg)     	-0.04	-0.04	-0.04
+2nd-level Interactions (avg)    	-0.01	-0.01	-0.01
