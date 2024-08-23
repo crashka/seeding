@@ -493,13 +493,18 @@ def best_bracket(nplayers: int, nrounds: int, iters: int) -> Bracket:
 
     best = None
     failures = 0
-    for _ in range(iters):
-        bracket = build_bracket(nplayers, nrounds)
-        if not bracket:
-            failures += 1
-            continue
-        if cmp2(bracket, best):
-            best = bracket
+    loop = 0
+    try:
+        for loop in range(iters):
+            bracket = build_bracket(nplayers, nrounds)
+            if not bracket:
+                failures += 1
+                continue
+            if cmp2(bracket, best):
+                best = bracket
+    except KeyboardInterrupt:
+        print(f"Interrupted after {loop} loops...")
+        iters = loop
 
     if failures:
         print(f"Failures: {failures}/{iters} searching for best bracket")

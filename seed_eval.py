@@ -15,9 +15,9 @@ def main() -> int:
       $ python -m seed_eval <nplayers> <nrounds> <filename>
 
     The input file is expected to be a CSV where each row represents a round in the
-    bracket, and the team/matchup designations are specified in each group of four value
+    bracket, and the team/matchup designations are specified in groups of four values
     (i.e. (p1, p2) vs. (p3, p4)), with byes (if any) appearing at the end of the row.
-    Player "names" are currently expected to be 1-based integer values.
+    Player "names" are currently expected to be contiguous 1-based integers (1-n).
 
     See `ray-32-8.csv` and `ray-33-8.csv` as sample input files.
     """
