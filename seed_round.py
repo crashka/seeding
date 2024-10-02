@@ -386,15 +386,14 @@ class Bracket:
             self.stats[datum] = stats_agg
 
     def optimal(self) -> bool:
-        """Return ``True`` if min, max, and mean values are all within a specified
-        threshold of the optimal value; otherwise return ``False``.
+        """Return ``True`` if value is within a specified threshold of the optimal value;
+        otherwise return ``False``.
         """
         for datum, vals in self.stats.items():
             if vals[4] is None:
                 continue
-            for idx in range(3):
-                if not equiv(vals[idx], vals[4]):
-                    return False
+            if not equiv(vals[2], vals[4]):
+                return False
         return True
 
     def print(self) -> None:
