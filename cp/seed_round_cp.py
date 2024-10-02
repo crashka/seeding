@@ -21,14 +21,14 @@ def build_bracket(nplayers: int, nrounds: int) -> list:
 
     Constraints:
     
-    1. Each table has to sit exactly 4 players in each round (including bye players)
+    1. Each table seats exactly 4 players (including bye players) in each round
 
     2. Each player (including bye players) sits at exactly one table in each round
 
     3. Pair of players may not sit at the same table in more than one round (except for
     bye players)
 
-    4. Bye players (if any) must all sit at the same table in every round
+    4. Bye players (if any) must all sit at the same table (the last table) in every round
     """
     assert nplayers % 4 == 0, "Only multiples of 4 currently supported"
     ntables = nplayers // 4
@@ -61,9 +61,9 @@ def build_bracket(nplayers: int, nrounds: int) -> list:
             if p2 <= p1:
                 continue
             mtgs = []
-            for t in tables:
-                for r in rounds:
-                    mtg = model.new_bool_var(f'mtg_p1{p1}_p2{p2}_r{r}_t{t}')
+            for r in rounds:
+                for t in tables:
+                    mtg = model.new_bool_var(f'mtg_p{p1}_p{p2}_r{r}_t{t}')
                     model.add_multiplication_equality(mtg, [seats[(p1, r, t)], seats[(p2, r, t)]])
                     mtgs.append(mtg)
             model.add(sum(mtgs) < 2)
