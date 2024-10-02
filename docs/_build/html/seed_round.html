@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>seed_round – Seed Round &mdash; Seeding  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="seed_eval – Seed Evaluate" href="seed_eval.html" />
+    <link rel="prev" title="Welcome to Seeding’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Seeding
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">seed_round</span></code> – Seed Round</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#seed_round.PlayerData"><code class="docutils literal notranslate"><span class="pre">PlayerData</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#seed_round.round_val"><code class="docutils literal notranslate"><span class="pre">round_val()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#seed_round.Bracket"><code class="docutils literal notranslate"><span class="pre">Bracket</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#seed_round.Bracket.__init__"><code class="docutils literal notranslate"><span class="pre">Bracket.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#seed_round.Bracket.pick_byes"><code class="docutils literal notranslate"><span class="pre">Bracket.pick_byes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#seed_round.Bracket.add_byes"><code class="docutils literal notranslate"><span class="pre">Bracket.add_byes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#seed_round.Bracket.pick_teams"><code class="docutils literal notranslate"><span class="pre">Bracket.pick_teams()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#seed_round.Bracket.add_teams"><code class="docutils literal notranslate"><span class="pre">Bracket.add_teams()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#seed_round.Bracket.pick_matchups"><code class="docutils literal notranslate"><span class="pre">Bracket.pick_matchups()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#seed_round.Bracket.add_matchups"><code class="docutils literal notranslate"><span class="pre">Bracket.add_matchups()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#seed_round.Bracket.build"><code class="docutils literal notranslate"><span class="pre">Bracket.build()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#seed_round.Bracket.evaluate"><code class="docutils literal notranslate"><span class="pre">Bracket.evaluate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#seed_round.Bracket.print"><code class="docutils literal notranslate"><span class="pre">Bracket.print()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#seed_round.Bracket.print_divergence"><code class="docutils literal notranslate"><span class="pre">Bracket.print_divergence()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#seed_round.Bracket.print_retries"><code class="docutils literal notranslate"><span class="pre">Bracket.print_retries()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#seed_round.best_bracket"><code class="docutils literal notranslate"><span class="pre">best_bracket()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#seed_round.build_bracket"><code class="docutils literal notranslate"><span class="pre">build_bracket()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#seed_round.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="seed_eval.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">seed_eval</span></code> – Seed Evaluate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cp.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cp</span></code> – Constraint Programming</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Seeding</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">seed_round</span></code> – Seed Round</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/seed_round.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-seed_round">
+<span id="seed-round-seed-round"></span><h1><a class="reference internal" href="#module-seed_round" title="seed_round"><code class="xref py py-mod docutils literal notranslate"><span class="pre">seed_round</span></code></a> – Seed Round<a class="headerlink" href="#module-seed_round" title="Link to this heading"></a></h1>
+<p>The objective here is to generate matchups for the “seeding round” of a card-playing
+tournament (or any game consisting of two-player teams competing head-to-head).  The
+seeding “round” (misnomer) is actually a truncated round-robin tournament in itself, with
+a predetermined number of inner-rounds, in which players change partners for each round.
+The players are then ranked by best overall individual performance.</p>
+<p>This script implements a brute force approach, wherein we specify constraints and/or
+thresholds for the number and type of interactions allowed between players across the
+rounds, and generate random picks for byes, teams, and matchups for each round that
+conform to the rules.  We then define evaluation functions that indicate the actual levels
+of repeated interactions and/or diversity of experience (e.g. uniqueness in second-level
+interactions).  We can thus generate a number of conforming brackets and choose the one
+that demonstrates the best metrics (though it will almost certainly be suboptimal).</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="seed_round.PlayerData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">seed_round.</span></span><span class="sig-name descname"><span class="pre">PlayerData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#seed_round.PlayerData" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Statistics for evaluating brackets.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seed_round.round_val">
+<span class="sig-prename descclassname"><span class="pre">seed_round.</span></span><span class="sig-name descname"><span class="pre">round_val</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Number</span></span></span><a class="headerlink" href="#seed_round.round_val" title="Link to this definition"></a></dt>
+<dd><p>Provide the appropriate level of rounding for a stat value (does not change the
+number type); passthrough for non-numeric types (e.g. bool or str).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="seed_round.Bracket">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">seed_round.</span></span><span class="sig-name descname"><span class="pre">Bracket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nplayers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#seed_round.Bracket" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents a possible bracket.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="seed_round.Bracket.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nplayers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#seed_round.Bracket.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seed_round.Bracket.pick_byes">
+<span class="sig-name descname"><span class="pre">pick_byes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rnd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#seed_round.Bracket.pick_byes" title="Link to this definition"></a></dt>
+<dd><p>Pick players that will get a bye this round; we just hardwire the selection to
+be sequential across rounds, to assure evenness.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seed_round.Bracket.add_byes">
+<span class="sig-name descname"><span class="pre">add_byes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rnd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">byes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#seed_round.Bracket.add_byes" title="Link to this definition"></a></dt>
+<dd><p>Populate bye history structures (for either internal bracket generation, or
+loading an external bracket for evaluation).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seed_round.Bracket.pick_teams">
+<span class="sig-name descname"><span class="pre">pick_teams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rnd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">byes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#seed_round.Bracket.pick_teams" title="Link to this definition"></a></dt>
+<dd><p>Pick teams for the current round; we avoid picking previous partners, retrying
+the selection process if no qualifying candidates remain.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seed_round.Bracket.add_teams">
+<span class="sig-name descname"><span class="pre">add_teams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rnd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">teams</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#seed_round.Bracket.add_teams" title="Link to this definition"></a></dt>
+<dd><p>Populate team/partner history structures (for either internal bracket
+generation, or loading an external bracket for evaluation).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seed_round.Bracket.pick_matchups">
+<span class="sig-name descname"><span class="pre">pick_matchups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rnd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">teams</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#seed_round.Bracket.pick_matchups" title="Link to this definition"></a></dt>
+<dd><p>Pick matchups for the current round; we avoid picking opposing teams with
+previous partners for either player, and set a (currently suboptimal) threshold
+for maximum times an opposing player is seen.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seed_round.Bracket.add_matchups">
+<span class="sig-name descname"><span class="pre">add_matchups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rnd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matchups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#seed_round.Bracket.add_matchups" title="Link to this definition"></a></dt>
+<dd><p>Populate matchup/opponent history structures (for either internal bracket
+generation, or loading an external bracket for evaluation).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seed_round.Bracket.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#seed_round.Bracket.build" title="Link to this definition"></a></dt>
+<dd><p>Go through the processing of bulding the bracket (i.e. picking all of the
+matchups across rounds).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seed_round.Bracket.evaluate">
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#seed_round.Bracket.evaluate" title="Link to this definition"></a></dt>
+<dd><p>Evaluate the bracket in terms of aggregations on the <code class="docutils literal notranslate"><span class="pre">PlayerData</span></code> values.
+The resulting analysis is stored in <code class="docutils literal notranslate"><span class="pre">self.stats</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seed_round.Bracket.print">
+<span class="sig-name descname"><span class="pre">print</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#seed_round.Bracket.print" title="Link to this definition"></a></dt>
+<dd><p>Print bye, team, and matchup information by round.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seed_round.Bracket.print_divergence">
+<span class="sig-name descname"><span class="pre">print_divergence</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#seed_round.Bracket.print_divergence" title="Link to this definition"></a></dt>
+<dd><p>Print divergence from optimal value for min, max, and mean stats (if
+applicable).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seed_round.Bracket.print_retries">
+<span class="sig-name descname"><span class="pre">print_retries</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#seed_round.Bracket.print_retries" title="Link to this definition"></a></dt>
+<dd><p>Print some statistical information about retries when picking teams and
+matchups.  Higher numbers of retries are indicators of lower headroom in working
+within specified thresholds for repeated interactions, especially when the round
+number and/or team/match index is just below the maximum value.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seed_round.best_bracket">
+<span class="sig-prename descclassname"><span class="pre">seed_round.</span></span><span class="sig-name descname"><span class="pre">best_bracket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nplayers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#seed_round.Bracket" title="seed_round.Bracket"><span class="pre">Bracket</span></a></span></span><a class="headerlink" href="#seed_round.best_bracket" title="Link to this definition"></a></dt>
+<dd><p>Find the bracket with the best performing evaluation metrics.</p>
+<p>For now, the encoding of the selection criteria is hardwired, but later we can pass in
+options for it from the command line.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seed_round.build_bracket">
+<span class="sig-prename descclassname"><span class="pre">seed_round.</span></span><span class="sig-name descname"><span class="pre">build_bracket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nplayers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#seed_round.Bracket" title="seed_round.Bracket"><span class="pre">Bracket</span></a></span></span><a class="headerlink" href="#seed_round.build_bracket" title="Link to this definition"></a></dt>
+<dd><p>Attempt to build a bracket with the specified parameters.  Return <code class="docutils literal notranslate"><span class="pre">None</span></code> if
+unable to (typically because the constraints are too tight).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seed_round.main">
+<span class="sig-prename descclassname"><span class="pre">seed_round.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#seed_round.main" title="Link to this definition"></a></dt>
+<dd><p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -m seed_round &lt;nplayers&gt; &lt;nrounds&gt; [&lt;iterations&gt;]
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">iterations</span></code> indicates the number of iterations to use in searching for the
+best performing bracket; if <code class="docutils literal notranslate"><span class="pre">iterations</span></code> is not specified, the first bracket
+generated will be returned.</p>
+<p>To do:</p>
+<ul class="simple">
+<li><p>Print a prettier/more structured version of the final bracket</p></li>
+<li><p>Develop a closed-form solution for optimality</p></li>
+</ul>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Seeding’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="seed_eval.html" class="btn btn-neutral float-right" title="seed_eval – Seed Evaluate" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Crash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

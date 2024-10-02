@@ -86,7 +86,7 @@ def build_bracket(nplayers: int, nrounds: int) -> list:
     print("\nStatistics")
     print(f"- conflicts : {solver.num_conflicts}")
     print(f"- branches  : {solver.num_branches}")
-    print(f"- wall time : {solver.wall_time:f.2} secs")
+    print(f"- wall time : {solver.wall_time:.2f} secs")
     return bracket
 
 ########
