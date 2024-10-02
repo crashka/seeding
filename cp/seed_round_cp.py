@@ -6,13 +6,14 @@ are using the cp-sat library from Google's OR Tools.
 
 To Do:
 
-- Validate bracket using `Bracket.evaluate()`
 - Add/adjust constraints for bye players (N mod 4 != 0)
 """
 
 import sys
 
 from ortools.sat.python import cp_model
+
+from seed_round import Bracket
 
 def build_bracket(nplayers: int, nrounds: int) -> list:
     """Attempt to build a bracket with the specified parameters.  Return ``None`` if
@@ -27,7 +28,7 @@ def build_bracket(nplayers: int, nrounds: int) -> list:
     3. Pair of players may not sit at the same table in more than one round (except for
     bye players)
 
-    4. Bye players must all sit at the same table in every round
+    4. Bye players (if any) must all sit at the same table in every round
     """
     assert nplayers % 4 == 0, "Only multiples of 4 currently supported"
     ntables = nplayers // 4
@@ -59,13 +60,13 @@ def build_bracket(nplayers: int, nrounds: int) -> list:
         for p2 in players:
             if p2 <= p1:
                 continue
-            meets = []
+            mtgs = []
             for t in tables:
                 for r in rounds:
-                    meet = model.new_bool_var(f'meet_r{r}_t{t}')
-                    model.add_multiplication_equality(meet, [seats[(p1, r, t)], seats[(p2, r, t)]])
-                    meets.append(meet)
-            model.add(sum(meets) < 2)
+                    mtg = model.new_bool_var(f'mtg_p1{p1}_p2{p2}_r{r}_t{t}')
+                    model.add_multiplication_equality(mtg, [seats[(p1, r, t)], seats[(p2, r, t)]])
+                    mtgs.append(mtg)
+            model.add(sum(mtgs) < 2)
 
     # Constraint #4
     pass  # coming soon...
@@ -83,11 +84,48 @@ def build_bracket(nplayers: int, nrounds: int) -> list:
         for t in tables:
             bracket[-1].append([p for p in players if solver.value(seats[(p, r, t)])])
 
+    if not validate_bracket(bracket, nplayers, nrounds):
+        raise RuntimeError("Generated bracket fails validation")
+
     print("\nStatistics")
     print(f"- conflicts : {solver.num_conflicts}")
     print(f"- branches  : {solver.num_branches}")
     print(f"- wall time : {solver.wall_time:.2f} secs")
     return bracket
+
+def validate_bracket(bracket_in: list, nplayers: int, nrounds: int) -> bool:
+    """Return ``True`` if bracket is correct (i.e. all intended constraints met),
+    ``False`` otherwise.
+    """
+    assert nrounds == len(bracket_in)
+    val_brkt = Bracket(nplayers, nrounds)
+
+    for r, round in enumerate(bracket_in):
+        teams = set()
+        matchups = set()
+        for t, table in enumerate(round):
+            p1, p2, p3, p4 = table
+            team1, team2 = (p1, p2), (p3, p4)
+            teams.add(team1)
+            teams.add(team2)
+            matchups.add((team1, team2))
+
+        byes = set()
+        val_brkt.add_byes(r, byes)
+        val_brkt.add_teams(r, teams)
+        val_brkt.add_matchups(r, matchups)
+
+    val_brkt.evaluate()
+    return val_brkt.optimal()
+
+def print_bracket(bracket: list) -> None:
+    """Print (to stdout) human-readable representation of the generated backed (internal
+    format).
+    """
+    for r, round in enumerate(bracket):
+        print(f"\nRound {r}:")
+        for t, table in enumerate(round):
+            print(f"  Table {t}: {table}")
 
 ########
 # main #
@@ -109,11 +147,7 @@ def main() -> int:
         print(f"Unable to build bracket")
         return 1
 
-    for r, round in enumerate(bracket):
-        print(f"\nRound {r}:")
-        for t, table in enumerate(round):
-            print(f"  Table {t}: {table}")
-
+    print_bracket(bracket)
     return 0
 
 if __name__ == "__main__":

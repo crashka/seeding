@@ -56,6 +56,7 @@ class PlayerData(Enum):
 EvalStats = dict[PlayerData, list[Number]]  # list contains [min, max, mean, stdev, opt]
 
 FLOAT_PREC = 2
+EQUIV_THRESH = 0.1  # as an absolute float value
 
 # opponent threshold progression for specified number of rounds (or multiples thereof)--
 # otherwise, fall back to default proportional progression (represented by key `None`);
@@ -73,6 +74,11 @@ def round_val(val: Number, prec: int = FLOAT_PREC) -> Number:
     if isinstance(val, float):
         return round(val, prec)
     return val
+
+def equiv(val: float, ref: float) -> bool:
+    """Check equivalence between a float value and its reference value.
+    """
+    return abs(val - ref) <= EQUIV_THRESH
 
 class Bracket:
     """Represents a possible bracket.
@@ -378,6 +384,18 @@ class Bracket:
                 stats_agg.append(func(all_stats[datum]))
             stats_agg.append(opt.get(datum))
             self.stats[datum] = stats_agg
+
+    def optimal(self) -> bool:
+        """Return ``True`` if min, max, and mean values are all within a specified
+        threshold of the optimal value; otherwise return ``False``.
+        """
+        for datum, vals in self.stats.items():
+            if vals[4] is None:
+                continue
+            for idx in range(3):
+                if not equiv(vals[idx], vals[4]):
+                    return False
+        return True
 
     def print(self) -> None:
         """Print bye, team, and matchup information by round.
