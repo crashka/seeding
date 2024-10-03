@@ -205,12 +205,12 @@ Triska](https://www.metalevel.at/).  In his [master's
 thesis](https://www.metalevel.at/mst.pdf), he discusses [constraint
 programming](https://en.wikipedia.org/wiki/Constraint_programming) (or "CP") as an
 approach (among others) to solving various instances of the problem.  `seed_round_cp.py`
-is an implementation of bracket generation using this method—including byes if the number
-of players is not an even multiple of 4!
+is an implementation of bracket generation using this method—including assigning byes if
+the number of players is not an even multiple of 4.
 
 ### Implementation
 
-There are a number of constraint solvers available.  I have chosen to use Goole's [CP-SAT
+There are a number of constraint solvers available.  I have chosen to use Google's [CP-SAT
 solver](https://developers.google.com/optimization/cp), part of its larger [OR-Tools
 package](https://developers.google.com/optimization/introduction).  Here is the overall
 approach and specification of constraints to be fed to the solver (taken from the
