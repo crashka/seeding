@@ -8,15 +8,15 @@ The players are then ranked by best overall individual performance.
 
 The goal is to minimize the number of times that any two players are paired as partners,
 as well as the number of times any two players face each other as opponents, across all of
-the inner-rounds for the process.  A subordinate goals may be to maximize the distance
-(iteration number) between any repeat interactions (either partnerships or oppositions),
-if repeats cannot be avoided.
+the inner-rounds for the process.  A subordinate goal may be to maximize the distance
+(i.e. the number of inner-rounds) between any repeat interactions (either partnerships or
+oppositions)—only if repeats cannot be avoided (obviously).
 
-The following explorations of this problem are presented here:
+The following explorations of this problem are presented below:
 
 - [Naive Approach](#naive-approach)
 - [Combinatorics](#combinatorics)
-- [Constraint Programming (CP)](constraint-programming-cp)
+- [Constraint Programming (CP)](#constraint-programming-cp)
 
 ## Naive Approach
 
@@ -282,8 +282,9 @@ That's it.
 
 I was able to generate optimal brackets for N = 32 to 50; see `cp-*.eval` in the
 [brackets/](brackets) subdirectory.  The computation effort for certain cases was
-anomalously high (in particular, N = 33 and 47)—I would like to know why.  This will be an
-area of investigation for me, as part of optimizing the performance of the model.
+anomalously high (in particular, N = 33, 34, 35, and 47—noting that N = 36 is the most
+costly of the non-bye solutions).  I would like to know why.  This will be an area of
+investigation for me, as part of optimizing the performance of the model.
 
 <p align="center">
   <img src="resources/cp-stats-cpu.png" alt="CP Stats - CPU"
