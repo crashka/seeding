@@ -91,7 +91,7 @@ def build_bracket(nplayers: int, nrounds: int) -> list:
 
     solver = cp_model.CpSolver()
     status = solver.solve(model)
-    print(f"Status: {status} ({solver.status_name(status)})")
+    print(f"Status: {status} ({solver.status_name(status)})", file=sys.stderr)
 
     if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
         return None
@@ -106,10 +106,10 @@ def build_bracket(nplayers: int, nrounds: int) -> list:
     if not validate_bracket(bracket, nplayers, nrounds):
         raise RuntimeError("Generated bracket fails validation")
 
-    print("\nSolver Stats")
-    print(f"- Conflicts : {solver.num_conflicts}")
-    print(f"- Branches  : {solver.num_branches}")
-    print(f"- Wall time : {solver.wall_time:.2f} secs")
+    print("\nSolver Stats", file=sys.stderr)
+    print(f"- Conflicts : {solver.num_conflicts}", file=sys.stderr)
+    print(f"- Branches  : {solver.num_branches}", file=sys.stderr)
+    print(f"- Wall time : {solver.wall_time:.2f} secs", file=sys.stderr)
     return bracket
 
 def validate_bracket(bracket_in: list, nplayers: int, nrounds: int) -> bool:
@@ -142,8 +142,7 @@ def validate_bracket(bracket_in: list, nplayers: int, nrounds: int) -> bool:
     return val_brkt.optimal()
 
 def print_bracket(bracket: list) -> None:
-    """Print (to stdout) human-readable representation of the generated backed (internal
-    format).
+    """Print human-readable representation of the generated backed (internal format).
     """
     for r, round in enumerate(bracket):
         print(f"\nRound {r}:")
@@ -153,6 +152,13 @@ def print_bracket(bracket: list) -> None:
             else:
                 print(f"  Table {t}: {table}")
 
+def print_bracket_csv(bracket: list) -> None:
+    """Print CSV for generated bracket, compatible with input format expected by
+    ``seed_eval``.
+    """
+    for round in bracket:
+        print(','.join([str(player + 1) for table in round for player in table]))
+
 ########
 # main #
 ########
@@ -160,20 +166,26 @@ def print_bracket(bracket: list) -> None:
 def main() -> int:
     """Usage::
 
-      $ python -m seed_round_cp <nplayers> <nrounds>
+      $ python -m seed_round_cp <nplayers> <nrounds> [<csvout>]
     """
-    nplayers  = int(sys.argv[1])
-    nrounds   = int(sys.argv[2])
+    nplayers = int(sys.argv[1])
+    nrounds  = int(sys.argv[2])
+    csvout   = None
     if len(sys.argv) > 3:
-        print(f"Invalid arg(s): {' '.join(sys.argv[3:])}")
-        return 1
+        csvout = bool(sys.argv[3])
+        if len(sys.argv) > 4:
+            print(f"Invalid arg(s): {' '.join(sys.argv[4:])}", file=sys.stderr)
+            return 1
 
     bracket = build_bracket(nplayers, nrounds)
     if not bracket:
-        print(f"Unable to build bracket")
+        print("Unable to build bracket", file=sys.stderr)
         return 1
 
-    print_bracket(bracket)
+    if csvout:
+        print_bracket_csv(bracket)
+    else:
+        print_bracket(bracket)
     return 0
 
 if __name__ == "__main__":
