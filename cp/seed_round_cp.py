@@ -36,7 +36,6 @@ def build_bracket(nplayers: int, nrounds: int) -> list:
 
     4. All ghost players (if any) must sit at the same table in every round (we'll make it
        the last table, for simplicity)
-
     """
     nbyes       = nplayers % 4
     nghosts     = (4 - nbyes) % 4
@@ -84,7 +83,8 @@ def build_bracket(nplayers: int, nrounds: int) -> list:
                     mtgs.append(mtg)
             model.add(sum(mtgs) < 2)
 
-    # Constraint #4 - ghost players all sit at the last table in every round
+    # Constraint #4 - ghost players all sit at the last table in every round (along with
+    # player(s) getting a bye)
     for g in ghosts:
         for r in rounds:
             model.add(seats[(g, r, ntables - 1)] == 1)
@@ -100,7 +100,9 @@ def build_bracket(nplayers: int, nrounds: int) -> list:
     for r in rounds:
         bracket.append([])
         for t in tables:
-            # only considering real players (i.e. ignoring ghost players)
+            # only register real players; if the number of players is less than 4 (after
+            # ignoring ghosts), that means they are getting byes for the round--this can
+            # only happen for the last table (see `validate_bracket()`)
             bracket[-1].append([p for p in players if solver.value(seats[(p, r, t)])])
 
     if not validate_bracket(bracket, nplayers, nrounds):
