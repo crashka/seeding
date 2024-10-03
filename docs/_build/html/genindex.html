@@ -43,8 +43,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="seed_round.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">seed_round</span></code> – Seed Round</a></li>
+<li class="toctree-l1"><a class="reference internal" href="seed_round_cp.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">seed_round_cp</span></code> – Seed Round (CP)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="seed_eval.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">seed_eval</span></code> – Seed Evaluate</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cp.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cp</span></code> – Constraint Programming</a></li>
 </ul>
 
         </div>
@@ -77,7 +77,6 @@
  <a href="#_"><strong>_</strong></a>
  | <a href="#A"><strong>A</strong></a>
  | <a href="#B"><strong>B</strong></a>
- | <a href="#C"><strong>C</strong></a>
  | <a href="#E"><strong>E</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#O"><strong>O</strong></a>
@@ -120,23 +119,10 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="seed_round.html#seed_round.Bracket.build">build() (seed_round.Bracket method)</a>
 </li>
-      <li><a href="cp.html#cp.seed_round_cp.build_bracket">build_bracket() (in module cp.seed_round_cp)</a>
+      <li><a href="seed_round.html#seed_round.build_bracket">build_bracket() (in module seed_round)</a>
 
       <ul>
-        <li><a href="seed_round.html#seed_round.build_bracket">(in module seed_round)</a>
-</li>
-      </ul></li>
-  </ul></td>
-</tr></table>
-
-<h2 id="C">C</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
-    cp.seed_round_cp
-
-      <ul>
-        <li><a href="cp.html#module-cp.seed_round_cp">module</a>
+        <li><a href="seed_round_cp.html#seed_round_cp.build_bracket">(in module seed_round_cp)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -157,12 +143,12 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="cp.html#cp.seed_round_cp.main">main() (in module cp.seed_round_cp)</a>
+      <li><a href="seed_eval.html#seed_eval.main">main() (in module seed_eval)</a>
 
       <ul>
-        <li><a href="seed_eval.html#seed_eval.main">(in module seed_eval)</a>
-</li>
         <li><a href="seed_round.html#seed_round.main">(in module seed_round)</a>
+</li>
+        <li><a href="seed_round_cp.html#seed_round_cp.main">(in module seed_round_cp)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -171,11 +157,11 @@
     module
 
       <ul>
-        <li><a href="cp.html#module-cp.seed_round_cp">cp.seed_round_cp</a>
-</li>
         <li><a href="seed_eval.html#module-seed_eval">seed_eval</a>
 </li>
         <li><a href="seed_round.html#module-seed_round">seed_round</a>
+</li>
+        <li><a href="seed_round_cp.html#module-seed_round_cp">seed_round_cp</a>
 </li>
       </ul></li>
   </ul></td>
@@ -200,17 +186,19 @@
 </li>
       <li><a href="seed_round.html#seed_round.PlayerData">PlayerData (class in seed_round)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="seed_round.html#seed_round.Bracket.print">print() (seed_round.Bracket method)</a>
 </li>
-      <li><a href="cp.html#cp.seed_round_cp.print_bracket">print_bracket() (in module cp.seed_round_cp)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="seed_round_cp.html#seed_round_cp.print_bracket">print_bracket() (in module seed_round_cp)</a>
 </li>
-      <li><a href="cp.html#cp.seed_round_cp.print_bracket_csv">print_bracket_csv() (in module cp.seed_round_cp)</a>
+      <li><a href="seed_round_cp.html#seed_round_cp.print_bracket_csv">print_bracket_csv() (in module seed_round_cp)</a>
 </li>
       <li><a href="seed_round.html#seed_round.Bracket.print_divergence">print_divergence() (seed_round.Bracket method)</a>
 </li>
       <li><a href="seed_round.html#seed_round.Bracket.print_retries">print_retries() (seed_round.Bracket method)</a>
+</li>
+      <li><a href="seed_round.html#seed_round.Bracket.print_stats">print_stats() (seed_round.Bracket method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -233,8 +221,6 @@
         <li><a href="seed_eval.html#module-seed_eval">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     seed_round
 
@@ -243,12 +229,21 @@
 </li>
       </ul></li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    seed_round_cp
+
+      <ul>
+        <li><a href="seed_round_cp.html#module-seed_round_cp">module</a>
+</li>
+      </ul></li>
+  </ul></td>
 </tr></table>
 
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="cp.html#cp.seed_round_cp.validate_bracket">validate_bracket() (in module cp.seed_round_cp)</a>
+      <li><a href="seed_round_cp.html#seed_round_cp.validate_bracket">validate_bracket() (in module seed_round_cp)</a>
 </li>
   </ul></td>
 </tr></table>

@@ -21,7 +21,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="seed_eval – Seed Evaluate" href="seed_eval.html" />
+    <link rel="next" title="seed_round_cp – Seed Round (CP)" href="seed_round_cp.html" />
     <link rel="prev" title="Welcome to Seeding’s documentation!" href="index.html" /> 
 </head>
 
@@ -61,6 +61,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#seed_round.Bracket.evaluate"><code class="docutils literal notranslate"><span class="pre">Bracket.evaluate()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#seed_round.Bracket.optimal"><code class="docutils literal notranslate"><span class="pre">Bracket.optimal()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#seed_round.Bracket.print"><code class="docutils literal notranslate"><span class="pre">Bracket.print()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#seed_round.Bracket.print_stats"><code class="docutils literal notranslate"><span class="pre">Bracket.print_stats()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#seed_round.Bracket.print_divergence"><code class="docutils literal notranslate"><span class="pre">Bracket.print_divergence()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#seed_round.Bracket.print_retries"><code class="docutils literal notranslate"><span class="pre">Bracket.print_retries()</span></code></a></li>
 </ul>
@@ -70,8 +71,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#seed_round.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="seed_round_cp.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">seed_round_cp</span></code> – Seed Round (CP)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="seed_eval.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">seed_eval</span></code> – Seed Evaluate</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cp.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cp</span></code> – Constraint Programming</a></li>
 </ul>
 
         </div>
@@ -208,8 +209,14 @@ otherwise return <code class="docutils literal notranslate"><span class="pre">Fa
 
 <dl class="py method">
 <dt class="sig sig-object py" id="seed_round.Bracket.print">
-<span class="sig-name descname"><span class="pre">print</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#seed_round.Bracket.print" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">print</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#seed_round.Bracket.print" title="Link to this definition"></a></dt>
 <dd><p>Print bye, team, and matchup information by round.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seed_round.Bracket.print_stats">
+<span class="sig-name descname"><span class="pre">print_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">divergence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#seed_round.Bracket.print_stats" title="Link to this definition"></a></dt>
+<dd><p>Print statistics for the bracket.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -269,7 +276,7 @@ generated will be returned.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Seeding’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="seed_eval.html" class="btn btn-neutral float-right" title="seed_eval – Seed Evaluate" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="seed_round_cp.html" class="btn btn-neutral float-right" title="seed_round_cp – Seed Round (CP)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

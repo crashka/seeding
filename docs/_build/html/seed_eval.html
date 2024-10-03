@@ -21,8 +21,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="cp – Constraint Programming" href="cp.html" />
-    <link rel="prev" title="seed_round – Seed Round" href="seed_round.html" /> 
+    <link rel="prev" title="seed_round_cp – Seed Round (CP)" href="seed_round_cp.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,11 +45,11 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="seed_round.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">seed_round</span></code> – Seed Round</a></li>
+<li class="toctree-l1"><a class="reference internal" href="seed_round_cp.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">seed_round_cp</span></code> – Seed Round (CP)</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">seed_eval</span></code> – Seed Evaluate</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#seed_eval.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="cp.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cp</span></code> – Constraint Programming</a></li>
 </ul>
 
         </div>
@@ -84,9 +83,12 @@
 <dt class="sig sig-object py" id="seed_eval.main">
 <span class="sig-prename descclassname"><span class="pre">seed_eval.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#seed_eval.main" title="Link to this definition"></a></dt>
 <dd><p>Usage:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -m seed_eval &lt;nplayers&gt; &lt;nrounds&gt; &lt;filename&gt;
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -m seed_eval &lt;nplayers&gt; &lt;nrounds&gt; &lt;filename&gt; [&lt;print_bracket&gt;]
 </pre></div>
 </div>
+<p>where any non-empty value for <code class="docutils literal notranslate"><span class="pre">print_bracket</span></code> specifies that the bracket itself
+should also be included in the output; otherwise, only evaluation stats and analysis
+are printed.</p>
 <p>The input file is expected to be a CSV where each row represents a round in the
 bracket, and the team/matchup designations are specified in groups of four values
 (i.e. (p1, p2) vs. (p3, p4)), with byes (if any) appearing at the end of the row.
@@ -100,8 +102,7 @@ Player “names” are currently expected to be contiguous 1-based integers (1-n
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="seed_round.html" class="btn btn-neutral float-left" title="seed_round – Seed Round" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="cp.html" class="btn btn-neutral float-right" title="cp – Constraint Programming" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="seed_round_cp.html" class="btn btn-neutral float-left" title="seed_round_cp – Seed Round (CP)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

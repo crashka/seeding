@@ -13,8 +13,8 @@ Modules
    :maxdepth: 2
 
    seed_round
+   seed_round_cp
    seed_eval
-   cp
 
 Indexes and Tables
 ------------------

@@ -24,7 +24,7 @@ def main() -> int:
     Player "names" are currently expected to be contiguous 1-based integers (1-n).
 
     See `ray-32-8.csv` and `ray-33-8.csv` as sample input files.
-a    """
+    """
     nplayers   = int(sys.argv[1])
     nrounds    = int(sys.argv[2])
     filename   = sys.argv[3]
