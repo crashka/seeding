@@ -57,17 +57,17 @@ def build_bracket(nplayers: int, nrounds: int) -> list:
             for t in tables:
                 seats[(p, r, t)] = model.new_bool_var(f'seat_p{p}_r{r}_t{t}')
 
-    # Contraint #1 - for every round, each table seats 4 players
+    # Constraint #1 - for every round, each table seats 4 players
     for r in rounds:
         for t in tables:
             model.add(sum(seats[(p, r, t)] for p in all_players) == 4)
 
-    # Contraint #2 - every player sits at one table per round
+    # Constraint #2 - every player sits at one table per round
     for p in all_players:
         for r in rounds:
             model.add(sum(seats[(p, r, t)] for t in tables) == 1)
 
-    # Contraint #3 - every pair of players meets no more than once across all rounds
+    # Constraint #3 - every pair of players meets no more than once across all rounds
     # (except ghost-ghost)
     for p1 in all_players:
         for p2 in all_players:
