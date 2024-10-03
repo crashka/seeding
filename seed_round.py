@@ -396,7 +396,7 @@ class Bracket:
                 return False
         return True
 
-    def print(self) -> None:
+    def print(self, stats: bool = False) -> None:
         """Print bye, team, and matchup information by round.
         """
         for rnd in range(self.nrounds):
@@ -409,6 +409,14 @@ class Bracket:
             for idx, matchup in enumerate(self.rnd_matchups[rnd]):
                 print(f"    {idx:2d}: {matchup[0]} vs. {matchup[1]}")
 
+        if stats:
+            self.print_stats(divergence=True)
+        if DEBUG:
+            self.print_retries()
+
+    def print_stats(self, divergence: bool = False) -> None:
+        """Print statistics for the bracket.
+        """
         print(f"\n{'Statistic':32}\tMin\tMax\tMean\tStddev\tOptimal")
         print(f"{'---------':32}\t-----\t-----\t-----\t------\t-------")
         for datum in self.stats:
@@ -419,8 +427,8 @@ class Bracket:
                    round_val(self.stats[datum][4]) or '')
             print(f"{datum.value:32}\t{agg[0]}\t{agg[1]}\t{agg[2]}\t{agg[3]}\t{agg[4]}")
 
-        self.print_divergence()
-        not DEBUG or self.print_retries()
+        if divergence:
+            self.print_divergence()
 
     def print_divergence(self) -> None:
         """Print divergence from optimal value for min, max, and mean stats (if
@@ -435,6 +443,8 @@ class Bracket:
                    round_val(vals[1] - vals[4]),
                    round_val(vals[2] - vals[4]))
             print(f"{datum.value:32}\t{div[0]}\t{div[1]}\t{div[2]}")
+
+        print(f"\nOptimal: {self.optimal()}")
 
     def print_retries(self) -> None:
         """Print some statistical information about retries when picking teams and
@@ -576,7 +586,7 @@ def main() -> int:
             print(f"Unable to build bracket after {NTRIES} attempts")
             return 1
 
-    bracket.print()
+    bracket.print(stats=True)
     return 0
 
 if __name__ == "__main__":

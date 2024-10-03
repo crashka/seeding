@@ -12,7 +12,11 @@ from seed_round import Bracket
 def main() -> int:
     """Usage::
 
-      $ python -m seed_eval <nplayers> <nrounds> <filename>
+      $ python -m seed_eval <nplayers> <nrounds> <filename> [<print_bracket>]
+
+    where any non-empty value for ``print_bracket`` specifies that the bracket itself
+    should also be included in the output; otherwise, only evaluation stats and analysis
+    are printed.
 
     The input file is expected to be a CSV where each row represents a round in the
     bracket, and the team/matchup designations are specified in groups of four values
@@ -20,10 +24,11 @@ def main() -> int:
     Player "names" are currently expected to be contiguous 1-based integers (1-n).
 
     See `ray-32-8.csv` and `ray-33-8.csv` as sample input files.
-    """
-    nplayers  = int(sys.argv[1])
-    nrounds   = int(sys.argv[2])
-    filename  = sys.argv[3]
+a    """
+    nplayers   = int(sys.argv[1])
+    nrounds    = int(sys.argv[2])
+    filename   = sys.argv[3]
+    print_brkt = len(sys.argv) > 4 and sys.argv[4]
 
     bracket = Bracket(nplayers, nrounds)
 
@@ -45,7 +50,9 @@ def main() -> int:
             bracket.add_matchups(rnd, matchups)
 
     bracket.evaluate()
-    bracket.print()
+    if print_brkt:
+        bracket.print(stats=False)
+    bracket.print_stats(divergence=True)
     return 0
 
 if __name__ == "__main__":

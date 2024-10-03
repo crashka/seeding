@@ -169,6 +169,10 @@ def main() -> int:
     """Usage::
 
       $ python -m seed_round_cp <nplayers> <nrounds> [<csvout>]
+
+    where any non-empty value for ``csvout`` specifies that the bracket should be output
+    in CSV format (as expected by ``seed_eval``); otherwise a human-readable version is
+    printed.
     """
     nplayers = int(sys.argv[1])
     nrounds  = int(sys.argv[2])
