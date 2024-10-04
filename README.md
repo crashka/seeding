@@ -201,7 +201,7 @@ follow (but, then again, what the hell do I know about combinatorics?):
 ## Constraint Programming (CP)
 
 The social golfer problem has been [explored in some
-detail](https://www.metalevel.at/sgp/) by a mathematician named [Markus
+detail](https://www.metalevel.at/sgp/) by an apparently math-y CS guy named [Markus
 Triska](https://www.metalevel.at/).  In his [master's
 thesis](https://www.metalevel.at/mst.pdf), he discusses [constraint
 programming](https://en.wikipedia.org/wiki/Constraint_programming) (or "CP") as an
