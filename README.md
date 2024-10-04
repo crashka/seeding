@@ -112,7 +112,7 @@ See next section for (partial) explanation of stats.
 
 So, let's talk through this using numbers from the above data for 34 players and 8 rounds:
 
-- 34 players means 8 tables of 4 players per round, with 2 players gettng byes
+- 34 players means 8 tables of 4 players per round, with 2 players getting byes
 - 8 rounds means a total of 16 byes, so players will have at most 1 bye for the entire
   sequence (with 18 players playing all 8 rounds)
 - Every round, players who play will have 1 partner and 2 opponents, or 3 "interactions"
@@ -123,9 +123,9 @@ So, let's talk through this using numbers from the above data for 34 players and
   will be no repeat interactions between players
 
 Ray solved this (i.e. no repeat interactions) for 32 and 33 players across 8 rounds (see
-the `.csv` and `.eval` files in the [brackets/](brackets) subdirectory), so it should also
-be solvable for 34 players and above, since it only gets easier to avoid repeats as you
-add players.  The stats for the sample run above shows an average of 1.18 repeat
+`ray-*.csv` and `ray-*.eval` in the [`brackets/`](brackets) subdirectory), so it should
+also be solvable for 34 players and above, since it only gets easier to avoid repeats as
+you add players.  The stats for the sample run above shows an average of 1.18 repeat
 interactions (for any one player) across the 8 rounds.  Suboptimal (should be zero).  Note
 that all of the repeats are *repeat opponents*—this is because the script has a hardwired
 constraint of considering only first time interactions when selecting partners.
@@ -148,10 +148,10 @@ It turns out that our problem is closely related to the combinatorics [social go
 problem](https://en.wikipedia.org/wiki/Social_golfer_problem), which itself is a variant
 of the older and better-known [Kirkman's schoolgirl
 problem](https://en.wikipedia.org/wiki/Kirkman%27s_schoolgirl_problem).  At the core of
-both problems is the contruction of [Steiner
+both problems is the construction of [Steiner
 systems](https://en.wikipedia.org/wiki/Steiner_system), which represent subsets (blocks)
 of a larger set where certain combinations of elements appear in only one block.  Of
-particular interest and applicability are **resolvable** Steiner systems, wherein blocks
+particular interest and applicability are ***resolvable*** Steiner systems, wherein blocks
 can be specified that partition the full set.
 
 For the social golfer problem, the larger **set** is comprised of all golfers, **blocks**
@@ -174,13 +174,14 @@ The social golfer problem, as commonly stated, differs from our case in several 
 The literature on S(2,4,n) Steiner systems<sup>†</sup> indicates that there should be no
 repeat interactions of any kind for the numbers at play for us (30+ players and 8
 inner-rounds) in the case of `n ≡ 4 (mod 12)` (i.e. 28, 40, 52, ...).  I am not able to
-determine whether solutions are guaranteed for other cases of `n`, though I suspect so, in
+ascertain whether solutions are guaranteed for other cases of `n`, though I suspect so—in
 which case the core problem shifts over to the domain of [covering
 designs](https://www.dmgordon.org/cover/).  For the purposes of continuing to explore a
 solution through combinatorics, I think we can safely disregard differences #1 and #3,
 above.
 
-Here is my suggestion to Steve on a course to consider:
+For what it's worth, here is a recent suggestion I made to Steve on a possible course to
+follow (but, then again, what the hell do I know about combinatorics?):
 
 > I think the way to approach this is to consider three distinct cases of N:
 > 
@@ -208,12 +209,12 @@ approach (among others) to solving various instances of the problem.  `seed_roun
 is an implementation of bracket generation using this method—including assigning byes if
 the number of players is not an even multiple of 4.
 
-### Implementation
+### Solver and Model
 
-There are a number of constraint solvers available.  I have chosen to use Google's [CP-SAT
-solver](https://developers.google.com/optimization/cp), part of its larger [OR-Tools
-package](https://developers.google.com/optimization/introduction).  Here is the overall
-approach and specification of constraints to be fed to the solver (taken from the
+There are a number of constraint solvers available.  I have chosen to use Google's
+[CP-SAT](https://developers.google.com/optimization/cp) solver, part of its larger
+[OR-Tools](https://developers.google.com/optimization/introduction) package.  Here is the
+overall approach and specification of constraints to be fed to the solver (taken from the
 `build_bracket()` docheader):
 
 ```
@@ -280,16 +281,19 @@ That's it.
 
 ### Results
 
-I was able to generate optimal brackets for N = 32 to 50; see `cp-*.eval` in the
-[brackets/](brackets) subdirectory.  The computation effort for certain cases was
-anomalously high (in particular, N = 33, 34, 35, and 47—noting that N = 36 is the most
-costly of the non-bye solutions).  I would like to know why.  This will be an area of
-investigation for me, as part of optimizing the performance of the model.
+Using `seed_round_cp.py`, I was able to generate optimal brackets for N = 32 to 50; see
+`cp-*.eval` in the [`brackets/`](brackets) subdirectory.  The computation effort for
+certain cases was anomalously high (in particular, N = 33, 34, 35, and 47—noting that N =
+36 is the most costly of the non-bye solutions).  I would like to know why.  This will be
+an area of investigation for me, as part of optimizing the performance of the model.
 
 <p align="center">
   <img src="resources/cp-stats-cpu.png" alt="CP Stats - CPU"
        style="width: 75%;">
 </p>
+
+Other stats for the CP solver runs can be found in
+[`brackets/cp-sat_stats.xlsx`](brackets/cp-sat_stats.xlsx).
 
 ### Conclusion
 
