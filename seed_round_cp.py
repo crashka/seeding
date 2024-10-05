@@ -14,7 +14,7 @@ import sys
 
 from ortools.sat.python import cp_model
 
-from seed_round import Bracket
+from seed_round import DEBUG, Bracket
 
 def build_bracket(nplayers: int, nrounds: int) -> list:
     """Attempt to build a bracket with the specified configuration.  Return ``None`` if
@@ -51,6 +51,7 @@ def build_bracket(nplayers: int, nrounds: int) -> list:
 
     model = cp_model.CpModel()
 
+    # Constraint #0 - specify domain for (player, round, table)
     seats = {}
     for p in all_players:
         for r in rounds:
@@ -90,6 +91,10 @@ def build_bracket(nplayers: int, nrounds: int) -> list:
             model.add(seats[(g, r, ntables - 1)] == 1)
 
     solver = cp_model.CpSolver()
+    if DEBUG:
+        solver.parameters.log_search_progress = True
+        if DEBUG > 1:
+            solver.parameters.log_subsolver_statistics = True
     status = solver.solve(model)
     print(f"Status: {status} ({solver.status_name(status)})", file=sys.stderr)
 
