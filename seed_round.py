@@ -23,6 +23,11 @@ import random
 import sys
 from os import environ
 
+# NOTE: this is much slower, but empirically *appears* to explore the space more evenly
+# (for what that's worth)
+myrand = random.SystemRandom()
+#myrand = random
+
 DEBUG = int(environ.get('SEEDING_DEBUG') or 0)
 
 ##################
@@ -64,6 +69,8 @@ EQUIV_THRESH = 0.1  # as an absolute float value
 # eight-round format (though also not otherwise unreasonable)!
 OPP_THRESH = {
     8:    [1, 1, 1, 1, 1, 2, 2, 2],
+    4:    [1, 2, 2, 3],
+    3:    [1, 2, 2],
     None: [1, 2]
 }
 
@@ -179,7 +186,7 @@ class Bracket:
         for _ in range(RETRIES):
             available = rnd_players.copy()
             while available:
-                player = random.choice(list(available))
+                player = myrand.choice(list(available))
                 available.remove(player)
                 disqual_part = self.part_hist[player]
                 disqual_opp = {other for other in available
@@ -188,7 +195,7 @@ class Bracket:
                     self.retry_team[rnd].append(len(teams))
                     break
                 picklist = list(available - disqual_part - disqual_opp)
-                partner = random.choice(picklist)
+                partner = myrand.choice(picklist)
                 available.remove(partner)
                 teams.add((player, partner))
             if len(teams) < self.nteams:
@@ -228,7 +235,7 @@ class Bracket:
         for idx in range(RETRIES):
             available = teams.copy()
             while available:
-                team = random.choice(list(available))
+                team = myrand.choice(list(available))
                 available.remove(team)
                 disqual_part = set()
                 disqual_opp = set()
@@ -243,7 +250,7 @@ class Bracket:
                     self.retry_match[rnd].append(len(matchups))
                     break
                 picklist = list(available - disqual_part - disqual_opp)
-                opp = random.choice(picklist)
+                opp = myrand.choice(picklist)
                 available.remove(opp)
                 matchups.add((team, opp))
             if len(matchups) < self.nmatchups:
@@ -414,6 +421,21 @@ class Bracket:
         if DEBUG:
             self.print_retries()
 
+    def print_csv(self, stats: bool = False) -> None:
+        """Print CSV for generated bracket, compatible with input format expected by
+        ``seed_eval``.
+        """
+        if stats:
+            self.print_stats(divergence=True)
+            print('---')
+
+        for rnd in range(self.nrounds):
+            players = []
+            for matchup in self.rnd_matchups[rnd]:
+                players += matchup[0] + matchup[1]
+            players += self.rnd_byes[rnd]
+            print(','.join(str(x + 1) for x in players))
+
     def print_stats(self, divergence: bool = False) -> None:
         """Print statistics for the bracket.
         """
@@ -468,8 +490,6 @@ class Bracket:
 # command line #
 ################
 
-NTRIES = 50
-
 def best_bracket(nplayers: int, nrounds: int, iters: int) -> Bracket:
     """Find the bracket with the best performing evaluation metrics.
 
@@ -486,8 +506,8 @@ def best_bracket(nplayers: int, nrounds: int, iters: int) -> Bracket:
         dist_int2 = b2.stats[PlayerData.DIST_INTS]
         sprd_int1 = b1.stats[PlayerData.SPRD_INTS_2]
         sprd_int2 = b2.stats[PlayerData.SPRD_INTS_2]
-        # criterion 1: highest minimum distinct interactions (direct)
-        # criterion 2: highest mean distinct interactions (direct)
+        # criterion 1: highest minimum distinct interactions
+        # criterion 2: highest mean distinct interactions
         # criterion 3: lowest mean level 2 interaction spread
         if dist_int1[0] != dist_int2[0]:
             return dist_int1[0] > dist_int2[0]
@@ -508,7 +528,7 @@ def best_bracket(nplayers: int, nrounds: int, iters: int) -> Bracket:
         dist_int1 = b1.stats[PlayerData.DIST_INTS]
         dist_int2 = b2.stats[PlayerData.DIST_INTS]
         # criterion 1: lowest maximum repeat interactions
-        # criterion 2: highest minimum distinct interactions (direct)
+        # criterion 2: highest minimum distinct interactions
         # criterion 3: lowest mean repeat interactions
         if rept_int1[1] != rept_int2[1]:
             return rept_int1[1] < rept_int2[1]
@@ -517,6 +537,31 @@ def best_bracket(nplayers: int, nrounds: int, iters: int) -> Bracket:
                 return dist_int1[0] > dist_int2[0]
             else:
                 return rept_int1[2] < rept_int2[2]
+
+    def cmp3(b1: Bracket, b2: Bracket) -> int:
+        """Return `True` if `b1` scores higher than `b2`, `False` if `b1` scores lower
+        than `b2` - Version 2.
+        """
+        if not b2:
+            return True
+        rept_int1 = b1.stats[PlayerData.REPT_INTS]
+        rept_int2 = b2.stats[PlayerData.REPT_INTS]
+        dist_int1 = b1.stats[PlayerData.DIST_INTS]
+        dist_int2 = b2.stats[PlayerData.DIST_INTS]
+        # criterion 1: lowest maximum repeat interactions
+        # criterion 2: highest minimum distinct interactions
+        # criterion 3: lowest stddev for repeat interactions
+        # criterion 4: lowest stddev for distinct interactions
+        if rept_int1[1] != rept_int2[1]:
+            return rept_int1[1] < rept_int2[1]
+        else:
+            if dist_int1[0] != dist_int2[0]:
+                return dist_int1[0] > dist_int2[0]
+            else:
+                if rept_int1[3] != rept_int2[3]:
+                    return rept_int1[3] < rept_int2[3]
+                else:
+                    return dist_int1[3] < dist_int2[3]
 
     best = None
     failures = 0
@@ -527,7 +572,7 @@ def best_bracket(nplayers: int, nrounds: int, iters: int) -> Bracket:
             if not bracket:
                 failures += 1
                 continue
-            if cmp2(bracket, best):
+            if cmp3(bracket, best):
                 best = bracket
     except KeyboardInterrupt:
         print(f"Interrupted after {loop} loops...")
@@ -536,6 +581,8 @@ def best_bracket(nplayers: int, nrounds: int, iters: int) -> Bracket:
     if failures:
         print(f"Failures: {failures}/{iters} searching for best bracket")
     return best
+
+NTRIES = 50
 
 def build_bracket(nplayers: int, nrounds: int) -> Bracket:
     """Attempt to build a bracket with the specified parameters.  Return ``None`` if
@@ -577,16 +624,21 @@ def main() -> int:
     if len(sys.argv) > 3:
         best_iter = int(sys.argv[3])
 
+    if nrounds in OPP_THRESH:
+        print(f"{OPP_THRESH[nrounds]=}", file=sys.stderr)
+
     if best_iter:
         bracket = best_bracket(nplayers, nrounds, best_iter)
-        assert bracket
+        if not bracket:
+            print(f"Unable to build any brackets using {NTRIES=}")
+            return 1
     else:
         bracket = build_bracket(nplayers, nrounds)
         if not bracket:
             print(f"Unable to build bracket after {NTRIES} attempts")
             return 1
 
-    bracket.print(stats=True)
+    bracket.print_csv(stats=True)
     return 0
 
 if __name__ == "__main__":
