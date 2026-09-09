@@ -256,10 +256,9 @@ And here is the code for the model and constraints:
 
     # Constraint #3 - every pair of players meets no more than once across all rounds
     # (except ghost-ghost)
-    for p1 in all_players:
-        for p2 in all_players:
-            if p2 <= p1:
-                continue
+    for p1 in all_players[:-1]:
+        for p2 in all_players[p1+1:]:
+            assert p2 > p1
             if p1 in ghosts and p2 in ghosts:
                 continue
             mtgs = []
