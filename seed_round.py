@@ -500,68 +500,35 @@ def best_bracket(nplayers: int, nrounds: int, iters: int) -> Bracket:
         """Return `True` if `b1` scores higher than `b2`, `False` if `b1` scores lower
         than `b2` - Version 1.
         """
+        dist_int = b1.stats[PlayerData.DIST_INTS]
+        sprd_int = b1.stats[PlayerData.SPRD_INTS_2]
+        # crit 1: highest minimum distinct interactions
+        # crit 2: highest mean distinct interactions
+        # crit 3: lowest mean level 2 interaction spread
+        b1.cmp_crits = (dist_int[0], dist_int[2], -sprd_int[2])
         if not b2:
             return True
-        dist_int1 = b1.stats[PlayerData.DIST_INTS]
-        dist_int2 = b2.stats[PlayerData.DIST_INTS]
-        sprd_int1 = b1.stats[PlayerData.SPRD_INTS_2]
-        sprd_int2 = b2.stats[PlayerData.SPRD_INTS_2]
-        # criterion 1: highest minimum distinct interactions
-        # criterion 2: highest mean distinct interactions
-        # criterion 3: lowest mean level 2 interaction spread
-        if dist_int1[0] != dist_int2[0]:
-            return dist_int1[0] > dist_int2[0]
-        else:
-            if dist_int1[2] != dist_int2[2]:
-                return dist_int1[2] > dist_int2[2]
-            else:
-                return sprd_int1[2] < sprd_int2[2]
+        assert hasattr(b2, 'cmp_crits')
+        # note that higher is better here (different than below)
+        return b1.cmp_crits > b2.cmp_crits
 
-    def cmp2(b1: Bracket, b2: Bracket) -> int:
+    def cmp2(b1: Bracket, b2: Bracket | None) -> int:
         """Return `True` if `b1` scores higher than `b2`, `False` if `b1` scores lower
         than `b2` - Version 2.
         """
+        rept_int = b1.stats[PlayerData.REPT_INTS]
+        dist_int = b1.stats[PlayerData.DIST_INTS]
+        # crit 1: lowest maximum repeat interactions
+        # crit 2: highest minimum distinct interactions
+        # crit 3: lowest mean repeat interactions
+        # crit 4: lowest stddev for repeat interactions
+        # crit 5: lowest stddev for distinct interactions
+        b1.cmp_crits = (rept_int[1], -dist_int[0], rept_int[2], rept_int[3], dist_int[3])
         if not b2:
             return True
-        rept_int1 = b1.stats[PlayerData.REPT_INTS]
-        rept_int2 = b2.stats[PlayerData.REPT_INTS]
-        dist_int1 = b1.stats[PlayerData.DIST_INTS]
-        dist_int2 = b2.stats[PlayerData.DIST_INTS]
-        # criterion 1: lowest maximum repeat interactions
-        # criterion 2: highest minimum distinct interactions
-        # criterion 3: lowest mean repeat interactions
-        if rept_int1[1] != rept_int2[1]:
-            return rept_int1[1] < rept_int2[1]
-        else:
-            if dist_int1[0] != dist_int2[0]:
-                return dist_int1[0] > dist_int2[0]
-            else:
-                return rept_int1[2] < rept_int2[2]
-
-    def cmp3(b1: Bracket, b2: Bracket) -> int:
-        """Return `True` if `b1` scores higher than `b2`, `False` if `b1` scores lower
-        than `b2` - Version 2.
-        """
-        if not b2:
-            return True
-        rept_int1 = b1.stats[PlayerData.REPT_INTS]
-        rept_int2 = b2.stats[PlayerData.REPT_INTS]
-        dist_int1 = b1.stats[PlayerData.DIST_INTS]
-        dist_int2 = b2.stats[PlayerData.DIST_INTS]
-        # criterion 1: lowest maximum repeat interactions
-        # criterion 2: highest minimum distinct interactions
-        # criterion 3: lowest stddev for repeat interactions
-        # criterion 4: lowest stddev for distinct interactions
-        if rept_int1[1] != rept_int2[1]:
-            return rept_int1[1] < rept_int2[1]
-        else:
-            if dist_int1[0] != dist_int2[0]:
-                return dist_int1[0] > dist_int2[0]
-            else:
-                if rept_int1[3] != rept_int2[3]:
-                    return rept_int1[3] < rept_int2[3]
-                else:
-                    return dist_int1[3] < dist_int2[3]
+        assert hasattr(b2, 'cmp_crits')
+        # note that lower is better here (different than above)
+        return b1.cmp_crits < b2.cmp_crits
 
     best = None
     failures = 0
@@ -572,7 +539,7 @@ def best_bracket(nplayers: int, nrounds: int, iters: int) -> Bracket:
             if not bracket:
                 failures += 1
                 continue
-            if cmp3(bracket, best):
+            if cmp2(bracket, best):
                 best = bracket
     except KeyboardInterrupt:
         print(f"Interrupted after {loop} loops...")
