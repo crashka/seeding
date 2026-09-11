@@ -1,32 +1,32 @@
-Failures: 29/10000 searching for best bracket
+Failures: 9994/10000 searching for best bracket
 
 Statistic                       	Min	Max	Mean	Stddev	Optimal
 ---------                       	-----	-----	-----	------	-------
 Repeat Partners                 	0	0	0	0.0	
-Repeat Opponents                	2	3	2.5	0.52	
-Repeat Interactions             	2	3	2.5	0.52	
+Repeat Opponents                	0	0	0	0.0	
+Repeat Interactions             	0	0	0	0.0	
 Distinct Partners               	4	4	4	0.0	4.0
-Distinct Opponents              	5	6	5.5	0.52	8.0
-Distinct Interactions           	9	10	9.5	0.52	11
+Distinct Opponents              	8	8	8	0.0	8.0
+Distinct Interactions           	8	9	8.67	0.49	11
 2nd-level Partnerships (avg)    	1.1	1.1	1.1	0.0	1.09
-2nd-level Oppositions (avg)     	2.9	3.6	3.25	0.37	5.09
-2nd-level Interactions (avg)    	8.7	9.8	9.25	0.57	12.0
-2nd-level Partnerships Spread   	2	3	2.67	0.49	
-2nd-level Oppositions Spread    	5	8	6.83	1.11	
-2nd-level Interactions Spread   	4	4	4	0.0	
+2nd-level Oppositions (avg)     	5.1	5.1	5.1	0.0	5.09
+2nd-level Interactions (avg)    	11.3	11.5	11.43	0.1	12.0
+2nd-level Partnerships Spread   	1	3	2.25	0.62	
+2nd-level Oppositions Spread    	2	3	2.5	0.52	
+2nd-level Interactions Spread   	4	7	5.5	1.17	
 
 Divergence from Optimal         	Min	Max	Mean
 -----------------------         	-----	-----	-----
 Distinct Partners               	0.0	0.0	0.0
-Distinct Opponents              	-3.0	-2.0	-2.5
-Distinct Interactions           	-2	-1	-1.5
+Distinct Opponents              	0.0	0.0	0.0
+Distinct Interactions           	-3	-2	-2.33
 2nd-level Partnerships (avg)    	0.01	0.01	0.01
-2nd-level Oppositions (avg)     	-2.19	-1.49	-1.84
-2nd-level Interactions (avg)    	-3.3	-2.2	-2.75
+2nd-level Oppositions (avg)     	0.01	0.01	0.01
+2nd-level Interactions (avg)    	-0.7	-0.5	-0.57
 
 Optimal: False
 ---
-12,9,1,3,7,6,8,4,2,5,11,10
-1,7,8,2,9,5,10,6,12,4,11,3
-12,8,10,1,3,7,4,5,9,2,6,11
-2,3,10,4,8,11,7,9,6,1,12,5
+8,4,5,7,9,3,2,11,10,6,1,12
+6,11,5,4,12,2,1,8,3,7,10,9
+9,11,1,6,12,7,5,3,4,10,8,2
+4,6,3,10,8,5,1,9,12,11,7,2

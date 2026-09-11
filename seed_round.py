@@ -23,11 +23,6 @@ import random
 import sys
 from os import environ
 
-# NOTE: this is much slower, but empirically *appears* to explore the space more evenly
-# (for what that's worth)
-myrand = random.SystemRandom()
-#myrand = random
-
 DEBUG = int(environ.get('SEEDING_DEBUG') or 0)
 
 ##################
@@ -67,9 +62,26 @@ EQUIV_THRESH = 0.1  # as an absolute float value
 # otherwise, fall back to default proportional progression (represented by key `None`);
 # this is definitely HACKY, hardwiring a custom config for the (currently) standard
 # eight-round format (though also not otherwise unreasonable)!
+
+# NOTE that these thresholds should actually be adjusted based on the the number of
+# players (in addition to number of rounds)--or more precisely, they should really be
+# adjusted based on the *relationship* between players and rounds.  There is probably not
+# a structured way to determine that adjustment, so it'll either have to be trial and
+# error (if actually worth it), or we'll just live with "good enough".
 OPP_THRESH = {
     8:    [1, 1, 1, 1, 1, 2, 2, 2],
-    4:    [1, 2, 2, 3],
+    4:    [1, 1, 1, 1],
+    3:    [1, 1, 1],
+    None: [1, 2]
+}
+
+# do the same thing with interactions (again, with no real notion of how to set these,
+# especially in relation to OPP_THRESH--note that frequency of failed brackets, as well as
+# discovery of a new "best", are good indicators (of some sort!) of how well the settings
+# are working.
+INT_THRESH = {
+    8:    [1, 1, 1, 1, 1, 2, 2, 2],
+    4:    [1, 2, 2, 2],
     3:    [1, 2, 2],
     None: [1, 2]
 }
@@ -101,6 +113,7 @@ class Bracket:
 
     # other parameters
     opp_thresh:   list[int]       # max number of times an opponent can be seen
+    int_thresh:   list[int]       # max number of times an interaction can be seen
 
     # keeping track of rounds
     rnd_byes:     list[Byes]
@@ -112,6 +125,7 @@ class Bracket:
     bye_hist:  set[Player]        # set of players
     part_hist: list[set[Player]]  # indexed by player; value is set of partners
     opp_hist:  list[list[int]]    # indexed by player, opp; value is count
+    int_hist:  list[list[int]]    # indexed by player, other; value is count
 
     # stats/evaluation stuff
     stats:       EvalStats        # PlayerData aggregations (see type definition)
@@ -138,6 +152,15 @@ class Bracket:
                 self.opp_thresh.append(self.opp_thresh[-1])
         assert self.opp_thresh and isinstance(self.opp_thresh, list)
 
+        if self.nrounds in INT_THRESH:
+            self.int_thresh = INT_THRESH[self.nrounds]
+        else:
+            self.int_thresh = INT_THRESH[None]
+            # repeat final threshold as a backstop, if it might be needed
+            if self.nrounds % len(self.int_thresh) > 0:
+                self.int_thresh.append(self.int_thresh[-1])
+        assert self.int_thresh and isinstance(self.int_thresh, list)
+
         self.rnd_byes     = []
         self.rnd_teams    = []
         self.rnd_matchups = []
@@ -145,6 +168,7 @@ class Bracket:
         self.bye_hist     = set()
         self.part_hist    = [set() for _ in range(self.nplayers)]
         self.opp_hist     = [[0] * self.nplayers for _ in range(self.nplayers)]
+        self.int_hist     = [[0] * self.nplayers for _ in range(self.nplayers)]
 
         self.stats        = {}
         self.retry_team   = [list() for _ in range(self.nrounds)]
@@ -174,6 +198,9 @@ class Bracket:
         the selection process if no qualifying candidates remain.
         """
         RETRIES = 10
+        int_thresh_allot = self.nrounds // len(self.int_thresh)
+        int_thresh = self.int_thresh[rnd // int_thresh_allot]
+
         teams = set()
         all_players = range(self.nplayers)
         rnd_players = set(all_players) - byes
@@ -186,16 +213,16 @@ class Bracket:
         for _ in range(RETRIES):
             available = rnd_players.copy()
             while available:
-                player = myrand.choice(list(available))
+                player = random.choice(list(available))
                 available.remove(player)
                 disqual_part = self.part_hist[player]
                 disqual_opp = {other for other in available
-                               if self.opp_hist[player][other] > 0}
+                               if self.int_hist[player][other] >= int_thresh}
                 if available <= disqual_part | disqual_opp:
                     self.retry_team[rnd].append(len(teams))
                     break
                 picklist = list(available - disqual_part - disqual_opp)
-                partner = myrand.choice(picklist)
+                partner = random.choice(picklist)
                 available.remove(partner)
                 teams.add((player, partner))
             if len(teams) < self.nteams:
@@ -228,29 +255,32 @@ class Bracket:
         """
         RETRIES = 100
         # local parameters/thresholds
-        thresh_allot = self.nrounds // len(self.opp_thresh)
-        opp_thresh = self.opp_thresh[rnd // thresh_allot]
+        opp_thresh_allot = self.nrounds // len(self.opp_thresh)
+        opp_thresh = self.opp_thresh[rnd // opp_thresh_allot]
+        int_thresh_allot = self.nrounds // len(self.int_thresh)
+        int_thresh = self.int_thresh[rnd // int_thresh_allot]
 
         matchups = set()
         for idx in range(RETRIES):
             available = teams.copy()
             while available:
-                team = myrand.choice(list(available))
+                team = random.choice(list(available))
                 available.remove(team)
-                disqual_part = set()
                 disqual_opp = set()
+                disqual_int = set()
                 for player in team:
                     for opp in available:
-                        if set(opp) & self.part_hist[player]:
-                            disqual_part.add(opp)
                         if (self.opp_hist[player][opp[0]] >= opp_thresh or
                             self.opp_hist[player][opp[1]] >= opp_thresh):
                             disqual_opp.add(opp)
-                if available <= disqual_part | disqual_opp:
+                        if (self.int_hist[player][opp[0]] >= int_thresh or
+                            self.int_hist[player][opp[1]] >= int_thresh):
+                            disqual_int.add(opp)
+                if available <= disqual_opp | disqual_int:
                     self.retry_match[rnd].append(len(matchups))
                     break
-                picklist = list(available - disqual_part - disqual_opp)
-                opp = myrand.choice(picklist)
+                picklist = list(available - disqual_opp - disqual_int)
+                opp = random.choice(picklist)
                 available.remove(opp)
                 matchups.add((team, opp))
             if len(matchups) < self.nmatchups:
@@ -279,6 +309,20 @@ class Bracket:
             self.opp_hist[p3][p2] += 1
             self.opp_hist[p4][p1] += 1
             self.opp_hist[p4][p2] += 1
+
+            self.int_hist[p1][p2] += 1
+            self.int_hist[p2][p1] += 1
+            self.int_hist[p3][p4] += 1
+            self.int_hist[p4][p3] += 1
+
+            self.int_hist[p1][p3] += 1
+            self.int_hist[p1][p4] += 1
+            self.int_hist[p2][p3] += 1
+            self.int_hist[p2][p4] += 1
+            self.int_hist[p3][p1] += 1
+            self.int_hist[p3][p2] += 1
+            self.int_hist[p4][p1] += 1
+            self.int_hist[p4][p2] += 1
         self.rnd_matchups.append(matchups)
         return matchups
 
@@ -521,9 +565,28 @@ def best_bracket(nplayers: int, nrounds: int, iters: int) -> Bracket:
         # crit 1: lowest maximum repeat interactions
         # crit 2: highest minimum distinct interactions
         # crit 3: lowest mean repeat interactions
+        # <-- insert "lowest mean repeat opponents" here? (if it helps) -->
         # crit 4: lowest stddev for repeat interactions
         # crit 5: lowest stddev for distinct interactions
         b1.cmp_crits = (rept_int[1], -dist_int[0], rept_int[2], rept_int[3], dist_int[3])
+        if not b2:
+            return True
+        assert hasattr(b2, 'cmp_crits')
+        # note that lower is better here (different than above)
+        return b1.cmp_crits < b2.cmp_crits
+
+    def cmp3(b1: Bracket, b2: Bracket | None) -> int:
+        """Return `True` if `b1` scores higher than `b2`, `False` if `b1` scores lower
+        than `b2` - Version 3.
+        """
+        rept_opp = b1.stats[PlayerData.REPT_OPPS]
+        dist_opp = b1.stats[PlayerData.DIST_OPPS]
+        # crit 1: lowest maximum repeat opponents
+        # crit 2: highest minimum distinct opponents
+        # crit 3: lowest mean repeat opponents
+        # crit 4: lowest stddev for repeat opponents
+        # crit 5: lowest stddev for distinct opponents
+        b1.cmp_crits = (rept_opp[1], -dist_opp[0], rept_opp[2], rept_opp[3], dist_opp[3])
         if not b2:
             return True
         assert hasattr(b2, 'cmp_crits')
@@ -541,6 +604,7 @@ def best_bracket(nplayers: int, nrounds: int, iters: int) -> Bracket:
                 continue
             if cmp2(bracket, best):
                 best = bracket
+                print(f"{loop}: {best.cmp_crits}", file=sys.stderr)
     except KeyboardInterrupt:
         print(f"Interrupted after {loop} loops...")
         iters = loop
@@ -593,6 +657,7 @@ def main() -> int:
 
     if nrounds in OPP_THRESH:
         print(f"{OPP_THRESH[nrounds]=}", file=sys.stderr)
+        print(f"{INT_THRESH[nrounds]=}", file=sys.stderr)
 
     if best_iter:
         bracket = best_bracket(nplayers, nrounds, best_iter)
